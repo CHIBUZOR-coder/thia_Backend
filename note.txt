@@ -1,0 +1,152 @@
+//user1
+{
+    "firstName": "Chibuzor",
+    "lastName": "Emekalam",
+    "email": "chibuzoremkalam@gmail.com",
+    "phone": "09074639302",
+    "address": "Presco Abakaliki",
+    "password": "amakababe11",
+    "confirmPassword": "amakababe11"
+}
+
+//user2
+{
+    "firstName": "Chinwendu",
+    "lastName": "Bla",
+    "email": "chinwe@gmail.com",
+    "phone": "0967555",
+    "address": "Presco",
+    "password": "chinwendu11",
+    "confirmPassword": "chinwendu11"
+}
+
+//user4
+{
+    "firstName": "olex",
+    "lastName": "Emekalam",
+    "email": "olexemkalam@gmail.com",
+    "phone": "090746364755",
+    "address": "Mary Land",
+    "password": "amakababe11",
+    "confirmPassword": "amakababe11"
+}
+//Admin1
+{
+    "firstName": "Zoe",
+    "lastName": "Emekalam",
+    "email": "chibuzormekalam@gmail.com",
+    "phone": "09074639302",
+    "address": "Uk",
+    "password": "amakababe11",
+    "role": "Admin",
+    "confirmPassword": "amakababe11"
+}
+
+//Login Admin1
+{
+    "email": "chibuzormekalam@gmail.com",
+    "password": "amakababe11",
+}
+
+
+
+
+//Add to cart
+{
+    "clothId": 4,
+    "quantity": 3`
+}
+////////////////////////////////////////////////
+
+
+import client from "../db.js";
+
+export const AddToCart = async (req, res) => {
+  try {
+    const { clothId, quantity } = req.body;
+
+    //Find the user cart if it exixt
+    let userCart = await client.query(
+      `SELECT userr.id AS userId 
+     FROM userr 
+     JOIN cart ON cart.userId = userr.id 
+     WHERE userr.id = $1`,
+      [req.user.id]
+    );
+
+    // //Alternative to Find the user cart if it exixt
+    // let userCart = await client.query("SELECT * FROM cart WHERE userId = $1", [
+    //   req.user.id,
+    // ]);
+
+    //create userCart if not existing
+    if (userCart.rowCount === 0) {
+      userCart = await client.query(
+        "INSERT INTO cart (userId) VALUES($1)  RETURNING * ",
+        [req.user.id]
+      );
+    }
+
+    //check if  cloth that is to be added in the cart exists in cart
+    // Check if the cloth exists in the database
+    const cloth = await client.query(
+      `SELECT id, price FROM cloth WHERE id = $1`,
+      [clothId]
+    );
+
+    if (cloth.rowCount === 0)
+      return res
+        .status(400)
+        .json({ success: false, message: "Product not found" });
+
+    //Find the cart item if it exist
+    // let cartItem = await client.query(
+    //   "SELECT * FROM cartItems WHERE cartId=$1 AND clothsId=$2 ",
+    //   [userCart.id, cloth.id]
+    // );
+    //Find the cart item if it exist
+    let cartItem = await client.query(
+      "SELECT * FROM cartItems WHERE cartId = $1 AND clothsId = $2",
+      [userCart.rows[0].id, cloth.rows[0].id]
+    );
+
+    //Update cartItems if it is found
+    if (cartItem.rowCount > 0) {
+      cartItem = await client.query(
+        "UPDATE cartItems SET quantity = $1, amount = $2 WHERE id = $3 RETURNING *",
+        [
+          cartItem.rows[0].quantity + quantity,
+          cloth.rows[0].price * (cartItem.rows[0].quantity + quantity),
+          cartItem.rows[0].id,
+        ]
+      );
+
+      return res.status(200).json({
+        success: true,
+        message: "Cart item updated successfully",
+        data: cartItem.rows[0],
+      });
+    } else {
+      cartItem = await client.query(
+        "INSERT INTO  cartItems (cartId,  clothsId,  amount,  quantity) VALUES($1, $2, $3, $4)  RETURNING*",
+        [userCart.rows[0].id, clothId, cloth.rows[0].price * quantity, quantity]
+      );
+      return res.status(200).json({
+        success: true,
+        message: "product added to cart successfully",
+        data: cartItem.rows[0],
+      });
+    }
+  } catch (error) {
+    console.error({ message: error.message, stack: error.stack });
+    return res
+      .status(500)
+      .json({ success: false, message: "Internal server error" });
+  }
+};
+
+
+
+
+
+SELECT firstName, clothsId, cartItems.amount, quantity, cloth.brand, cloth.category  FROM userr JOIN cart ON cart.userId = userr.id JOIN cartItems ON cartItems.cartId = cart.id JOIN cloth ON cartItems.clothsId = cloth.id  WHERE userr.id = 4;
