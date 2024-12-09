@@ -20,6 +20,10 @@
     "confirmPassword": "chinwendu11"
 }
 
+
+
+
+
 //user4
 {
     "firstName": "olex",
@@ -30,6 +34,22 @@
     "password": "amakababe11",
     "confirmPassword": "amakababe11"
 }
+
+
+
+
+
+
+
+
+
+//User4 Login
+{ "email": "olexemkalam@gmail.com",
+    "password": "amakababe11"
+    
+    }
+
+
 //Admin1
 {
     "firstName": "Zoe",
@@ -41,6 +61,43 @@
     "role": "Admin",
     "confirmPassword": "amakababe11"
 }
+
+
+
+
+
+//user5
+{
+    "firstName": "Gods Power"
+    "lastName": "Onyebuchi",
+    "email": "godspower@gmail.com",
+    "phone": "090746375867",
+    "address": "Mary Land",
+    "password": "amakababe11",
+    "confirmPassword": "amakababe11"
+}
+
+
+
+//User5 Login
+{ "email": "godspower@gmail.com",
+    "password": "amakababe11"
+    
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 //Login Admin1
 {
@@ -150,3 +207,7 @@ export const AddToCart = async (req, res) => {
 
 
 SELECT firstName, clothsId, cartItems.amount, quantity, cloth.brand, cloth.category  FROM userr JOIN cart ON cart.userId = userr.id JOIN cartItems ON cartItems.cartId = cart.id JOIN cloth ON cartItems.clothsId = cloth.id  WHERE userr.id = 4;
+
+
+SELECT amount, quantity, brand, style, price, size FROM cart  JOIN cartItems ON  cart.id = cartItems.cartId JOIN cloth ON cartItems.clothsId = cloth.id WHERE cart.id = 3
+;

@@ -15,6 +15,10 @@ export const registerUser = async (req, res) => {
       lastName,
       phone,
       address,
+      address2,
+       city,
+    postal_code,
+      country,
       role,
       password,
       confirmPassword,
@@ -75,8 +79,7 @@ export const registerUser = async (req, res) => {
 
     //create new user
     const newUser = await client.query(
-      "INSERT INTO userr  ( email, firstName, lastName, phone, address,  password) VALUES($1, $2, $3, $4, $5, $6) RETURNING *",
-      [email, firstName, lastName, phone, address, hashedPassword]
+      "INSERT INTO userr  ( email, firstName, lastName, phone, address,  password,  address2, city, postal_code, country ) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING *", [email, firstName, lastName, phone, address, hashedPassword,  address2, city, postal_code, country]
     );
 
     const userData = newUser.rows[0];
