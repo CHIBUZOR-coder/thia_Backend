@@ -2,7 +2,7 @@ import client from "../db.js";
 
 export const AddToCart = async (req, res) => {
   try {
-    const { clothId, quantity } = req.body;
+    const { clothId, quantity, sizee } = req.body;
 
     // Check if quantity is a valid number
     if (isNaN(quantity) || quantity <= 0) {
@@ -50,11 +50,12 @@ export const AddToCart = async (req, res) => {
     //Update cartItems if it is found
     if (cartItem.rowCount > 0) {
       cartItem = await client.query(
-        "UPDATE cartItems SET quantity = $1, amount = $2 WHERE id = $3 RETURNING *",
+        "UPDATE cartItems SET quantity = $1, amount = $2, sizee = $3 WHERE id = $4 RETURNING *",
         [
           cartItem.rows[0].quantity + quantity,
           cloth.rows[0].price * (cartItem.rows[0].quantity + quantity),
           cartItem.rows[0].id,
+          sizee
         ]
       );
 
@@ -65,8 +66,8 @@ export const AddToCart = async (req, res) => {
       });
     } else {
       cartItem = await client.query(
-        "INSERT INTO  cartItems (cartId,  clothsId,  amount,  quantity) VALUES($1, $2, $3, $4)  RETURNING*",
-        [userCart.rows[0].id, clothId, cloth.rows[0].price * quantity, quantity]
+        "INSERT INTO  cartItems (cartId,  clothsId,  amount,  quantity, sizee) VALUES($1, $2, $3, $4, $5)  RETURNING*",
+        [userCart.rows[0].id, clothId, cloth.rows[0].price * quantity, quantity, sizee]
       );
       return res.status(200).json({
         success: true,
@@ -159,7 +160,7 @@ export const getCart = async (req, res) => {
          brand, 
          style, 
          price, 
-         size 
+         sizee 
        FROM 
          cart  
        JOIN 

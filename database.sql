@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS cloth (
     image VARCHAR(255),
     status VARCHAR(50),
     description VARCHAR(255),
-    size VARCHAR(50)
+    size NUMERIC
 );
 CREATE TABLE IF NOT EXISTS userr (
     id SERIAL PRIMARY KEY,
