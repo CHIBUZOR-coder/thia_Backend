@@ -6,6 +6,7 @@ import { productRouter } from "./Routers/productRouter.js";
 import { reviewsRoutes } from "./Routers/reviewsRoutes.js";
 import { authRouter } from "./Routers/authUsersRouter.js";
 import { cartRouter } from "./Routers/cartRoutr.js";
+import { searchRoute } from "./Routers/searchRouter.js";
 const app = express();
 import dotenv from "dotenv";
 
@@ -35,6 +36,7 @@ app.use("/", productRouter);
 app.use("/", reviewsRoutes);
 app.use("/", authRouter);
 app.use("/", cartRouter);
+app.use("/", searchRoute);
 
 
 

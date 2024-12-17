@@ -54,8 +54,8 @@ export const AddToCart = async (req, res) => {
         [
           cartItem.rows[0].quantity + quantity,
           cloth.rows[0].price * (cartItem.rows[0].quantity + quantity),
-          cartItem.rows[0].id,
-          sizee
+          sizee,
+         cartItem.rows[0].id
         ]
       );
 
@@ -139,10 +139,17 @@ export const getCart = async (req, res) => {
     }
 
     // Fetch the user's cart
-    const cart = await client.query("SELECT * FROM cart WHERE userId = $1", [
-      user.id,
-    ]);
+ const cart = await client.query(
+  `SELECT cart.id, style, sizee, quantity, amount, image, brand 
+   FROM cart 
+   JOIN cartItems ON cart.id = cartItems.cartId 
+   JOIN cloth ON cloth.id = cartItems.clothsId 
+   WHERE userId = $1;`,
+  [user.id]
+);
 
+
+    //user.id
     // Check if cart exists
     if (cart.rowCount === 0) {
       return res
@@ -160,7 +167,8 @@ export const getCart = async (req, res) => {
          brand, 
          style, 
          price, 
-         sizee 
+         sizee ,
+         image
        FROM 
          cart  
        JOIN 
