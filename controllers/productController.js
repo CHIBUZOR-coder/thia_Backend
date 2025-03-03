@@ -6,6 +6,9 @@ export const crateProduct = async (req, res) => {
     const { brand, style, category, price, description, size, status } =
       req.body; // Corrected this line
 
+console.log(req.body);
+
+          
     let imageUrl = null;
 
     if (!req.file) {
@@ -20,6 +23,7 @@ export const crateProduct = async (req, res) => {
       try {
         // Use async/await to handle the image upload process
         imageUrl = await uploadImageToCloudinary(req.file.buffer);
+
 
         // After the upload completes, log the image URL
         console.log("Image URL after upload:", imageUrl);
@@ -40,7 +44,7 @@ export const crateProduct = async (req, res) => {
 
     // Check if the product already exists
     const existingProduct = await client.query(
-      "SELECT * FROM cloths WHERE brand = $1 AND style = $2 AND category = $3 AND description = $4",
+      "SELECT * FROM cloth WHERE brand = $1 AND style = $2 AND category = $3 AND description = $4",
       [brand, style, category, description]
     );
 
@@ -77,6 +81,7 @@ export const crateProduct = async (req, res) => {
         added: result.rows,
       });
     }
+    
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

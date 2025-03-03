@@ -1,5 +1,6 @@
 CREATE DATABASE thiadataa;
 CREATE TYPE role_enum AS ENUM ('ADMIN', 'USER');
+CREATE TYPE status_enum AS ENUM ('Completed', 'Pending');
 CREATE TABLE IF NOT EXISTS cloth (
     id SERIAL PRIMARY KEY,
     brand VARCHAR(255),
@@ -49,6 +50,17 @@ CREATE TABLE IF NOT EXISTS cartItems (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT cart_key FOREIGN KEY (cartId) REFERENCES cart (id) ON DELETE CASCADE,
     CONSTRAINT cart_cloth FOREIGN KEY (clothsId) REFERENCES cloths (id) ON DELETE CASCADE,
-    CONSTRAINT unique_cart_item UNIQUE (cartId, clothsId)  --Ensure no duplicate cart - item pairs
+    CONSTRAINT unique_cart_item UNIQUE (cartId, clothsId) --Ensure no duplicate cart - item pairs
 );
-
+CREATE TABLE IF NOT EXISTS cloth_reciept(
+    id SERIAL PRIMARY KEY,
+    userId INT NOT NULL,
+    name TEXT,
+    amount NUMERIC,
+    quantity INT,
+    billed NUMERIC(10, 2),
+    status status_enum DEFAULT 'Pending',
+    image TEXT DEFAULT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT user_key FOREIGN KEY (userId) REFERENCES userr (id) ON DELETE CASCADE,
+)
