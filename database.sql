@@ -37,7 +37,7 @@ CREATE TABLE IF NOT EXISTS review (
 CREATE TABLE IF NOT EXISTS cart (
     id SERIAL PRIMARY KEY,
     userId INT UNIQUE,
-    CONSTRAINT cart_user FOREIGN KEY (userId) REFERENCES users (id)
+    CONSTRAINT cart_user FOREIGN KEY (userId) REFERENCES userr (id)
 );
 CREATE TABLE IF NOT EXISTS cartItems (
     id SERIAL PRIMARY KEY,
@@ -63,4 +63,19 @@ CREATE TABLE IF NOT EXISTS cloth_reciept(
     image TEXT DEFAULT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT user_key FOREIGN KEY (userId) REFERENCES userr (id) ON DELETE CASCADE,
-)
+) 
+
+// // // // // // // // Constrian viewing // // // // // // // // // // //
+SELECT conname AS constraint_name,
+    conrelid::regclass AS table_name,
+    confrelid::regclass AS referenced_table
+FROM pg_constraint
+WHERE contype = 'f';
+SELECT constraint_name,
+    table_name,
+    column_name,
+    foreign_table_name,
+    foreign_column_name
+FROM information_schema.key_column_usage
+    JOIN information_schema.constraint_column_usage ON constraint_name = constraint_name
+WHERE table_name = 'review';

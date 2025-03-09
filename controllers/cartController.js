@@ -181,7 +181,7 @@ export const getCart = async (req, res) => {
     );
 
     // Log cart items result for debugging
-    console.log("Cart Items Result:", cartitems);
+    // console.log("Cart Items Result:", cartitems);
 
     // Check if cart items exist
     if (cartitems.rowCount === 0) {
