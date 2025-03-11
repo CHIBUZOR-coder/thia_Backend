@@ -55,17 +55,20 @@ CREATE TABLE IF NOT EXISTS cartItems (
 CREATE TABLE IF NOT EXISTS cloth_reciept(
     id SERIAL PRIMARY KEY,
     userId INT NOT NULL,
-    name TEXT,
-    amount NUMERIC,
+    products JSONB NOT NULL
+
     quantity INT,
-    billed NUMERIC(10, 2),
+    bill NUMERIC(10, 2),
     status status_enum DEFAULT 'Pending',
     image TEXT DEFAULT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT user_key FOREIGN KEY (userId) REFERENCES userr (id) ON DELETE CASCADE,
-) 
+)
 
-// // // // // // // // Constrian viewing // // // // // // // // // // //
+
+
+
+ // // // // // // // // Constrian viewing // // // // // // // // // // //
 SELECT conname AS constraint_name,
     conrelid::regclass AS table_name,
     confrelid::regclass AS referenced_table

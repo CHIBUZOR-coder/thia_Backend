@@ -246,6 +246,87 @@ SELECT amount, quantity, brand, style, price, size FROM cart  JOIN cartItems ON 
 
 
 
+  status: 'success',
+  message: 'Transaction fetched successfully',
+  data: {
+    id: 8439457,
+    tx_ref: '71972961-9811-4091-a535-f98131c9272f',
+    flw_ref: 'FLW-MOCK-526a6714a85af7fbb58862a875f18b08',
+    device_fingerprint: 'fca6bfd7166897a9df797353f24b15bf',
+    amount: 1660.8999999999999,
+    currency: 'NGN',
+    charged_amount: 1660.9,
+    app_fee: 23.26,
+    merchant_fee: 0,
+    processor_response: 'Approved. Successful',
+    auth_model: 'VBVSECURECODE',
+    ip: '52.209.154.143',
+    narration: 'CARD Transaction ',
+    status: 'successful',
+    payment_type: 'card',
+    created_at: '2025-03-11T11:48:30.000Z',
+    account_id: 2587138,
+    card: {
+      first_6digits: '553188',
+      last_4digits: '2950',
+      issuer: ' CREDIT',
+      country: 'NIGERIA NG',
+      type: 'MASTERCARD',
+      token: 'flw-t1nf-a5966245283f5d62eb5df402ff3eaabb-m03k',
+      expiry: '12/30'
+    },
+    meta: {
+      __CheckoutInitAddress: 'https://checkout-v2.dev-flutterwave.com/v3/hosted/pay',
+      products: '[{"quantity":"1","style":"Matching","price":"580.3","brand":"Ankara","image":"https://res.cloudinary.com/dtjgj2odu/image/upload/v1732798263/product_image/u7yzrz39keafmpzq6vyj.jpg"},{"quantity":"1","style":"Pinner Four","price":"530.3","brand":"Ankara","image":"https://res.cloudinary.com/dtjgj2odu/image/upload/v1732798394/product_image/mw8a9vrjosyxz2hc9k82.jpg"},{"quantity":"1","style":"Gown","price":"550.3","brand":"Ankara","image":"https://res.cloudinary.com/dtjgj2odu/image/upload/v1732798336/product_image/rcoqjjqpgfsx0sjuofqw.jpg"}]'
+    },
+    amount_settled: 1635.89,
+    customer: {
+      id: 2600340,
+      name: 'Anonymous customer',
+      phone_number: '090746364755',
+      email: 'olexemkalam@gmail.com',
+      created_at: '2025-03-09T06:51:44.000Z'
+    }
+  }
+}
+cartProduvcts: [
+  {
+    quantity: 1,
+    style: 'Matching',
+    price: 580.3,
+    brand: 'Ankara',
+    image: 'https://res.cloudinary.com/dtjgj2odu/image/upload/v1732798263/product_image/u7yzrz39keafmpzq6vyj.jpg'
+  },
+  {
+    quantity: 1,
+    style: 'Pinner Four',
+    price: 530.3,
+    brand: 'Ankara',
+    image: 'https://res.cloudinary.com/dtjgj2odu/image/upload/v1732798394/product_image/mw8a9vrjosyxz2hc9k82.jpg'
+  },
+  {
+    quantity: 1,
+    style: 'Gown',
+    price: 550.3,
+    brand: 'Ankara',
+    image: 'https://res.cloudinary.com/dtjgj2odu/image/upload/v1732798336/product_image/rcoqjjqpgfsx0sjuofqw.jpg'
+  }
+]
+Flutterwave Response: {
+  status: 'success',
+  message: 'Hosted Link',
+  data: {
+    link: 'https://checkout-v2.dev-flutterwave.com/v3/hosted/pay/a9c6ff88ffc8e8057216'
+  }
+}
+Redirect URL: http://localhost:5173/thankyou?orderId=4ea20019-53a8-4d6b-a663-3caa0211ae91
+
+
+
+
+
+
+
 
 
 
