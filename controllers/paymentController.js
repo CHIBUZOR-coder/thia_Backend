@@ -38,7 +38,7 @@ export const initialisePayment = async (req, res) => {
       });
     }
     const cartProducts = await client.query(
-      "SELECT cartItems.quantity, cloth.style, cloth.price, cloth.brand, cloth.image FROM cloth JOIN cartItems ON cartItems.clothsId = cloth.id JOIN cart ON cartItems.cartId = cart.id JOIN userr ON cart.userId = userr.id WHERE userr.id = $1 ",
+      "SELECT cartItems.quantity, cloth.style, cloth.size, cloth.price, cloth.brand, cloth.image FROM cloth JOIN cartItems ON cartItems.clothsId = cloth.id JOIN cart ON cartItems.cartId = cart.id JOIN userr ON cart.userId = userr.id WHERE userr.id = $1 ",
       [user.id]
     );
 
@@ -75,6 +75,7 @@ export const initialisePayment = async (req, res) => {
             cartProducts.rows.map((product) => ({
               quantity: String(product.quantity),
               style: String(product.style),
+              size: String(product.sizee),
               price: String(product.price),
               brand: String(product.brand),
               image: String(product.image),
@@ -217,6 +218,8 @@ export const verifyPyment = async (req, res) => {
         "Completed",
       ]
     );
+
+    await client.query("DELETE FROM cart WHERE cart.userId = $1", [user.id]);
 
     return res.status(200).json({
       success: true,

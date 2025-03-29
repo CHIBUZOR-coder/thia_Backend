@@ -4,6 +4,9 @@ import { generateToken } from "../middlewares/generateToken.js";
 //create/register new user
 import dotenv from "dotenv";
 import { v4 as uuidv4 } from "uuid"; // <-- Add semicolon here
+import { cloudinary } from "../config/cloudinary.js";
+import jwt from "jsonwebtoken";
+import { transporter } from "../config/email.js";
 
 dotenv.config();
 
@@ -40,6 +43,29 @@ export const registerUser = async (req, res) => {
         success: false,
         message: "All fields are required.",
       });
+    }
+
+    let imageUrl;
+    if (!req.file) {
+      return res.status(400).json({ message: "No file provided" });
+    }
+
+    if (req.file) {
+      console.log("Starting image upload...");
+      // console.log("File buffer:", req.file.buffer);
+
+      try {
+        // Use async/await to handle the image upload process
+        imageUrl = await uploadImageToCloudinary(req.file.buffer);
+
+        // After the upload completes, log the image URL
+        console.log("Image URL after upload:", imageUrl);
+      } catch (error) {
+        console.error("Error during upload:", error);
+        return res
+          .status(500)
+          .json({ success: false, message: "Image upload failed" });
+      }
     }
 
     //check if user already exist
@@ -79,9 +105,14 @@ export const registerUser = async (req, res) => {
     // hash the password with the salt using bcrypt
     const hashedPassword = await bcrypt.hash(password, salt);
 
+    // Generate email verification token
+    const verifyEmailToken = jwt.sign({ email }, process.env.EMAIL_SECRET, {
+      expiresIn: "1h",
+    });
+
     //create new user
     const newUser = await client.query(
-      "INSERT INTO userr  ( email, firstName, lastName, phone, address,  password,  address2, city, postal_code, country ) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING *",
+      "INSERT INTO userr  ( email, firstName, lastName, phone, address,  password,  address2, city, postal_code, country, image ) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING *",
       [
         email,
         firstName,
@@ -93,14 +124,20 @@ export const registerUser = async (req, res) => {
         city,
         postal_code,
         country,
+        imageUrl,
       ]
     );
+
+    const verificationLink = `http://localhost:5173/verifyEmail?token=${verifyEmailToken}`;
+
+    await sendVerificationEmail(email, verificationLink);
 
     const userData = newUser.rows[0];
     delete userData.password; // Remove the password from the response
     return res.status(201).json({
       success: true,
-      message: "User created successfully.",
+      message:
+        "Registered successfully. Please check your email for verification..",
       user: userData,
     });
   } catch (error) {
@@ -108,6 +145,122 @@ export const registerUser = async (req, res) => {
       success: false,
       message: error.message,
     });
+  }
+};
+
+const uploadImageToCloudinary = async (fileBuffer) => {
+  try {
+    const uploadPromise = new Promise((resolve, reject) => {
+      cloudinary.uploader
+        .upload_stream(
+          { resource_type: "image", folder: "thia_user_image" },
+          (error, result) => {
+            if (error) {
+              return reject(error);
+            }
+            resolve(result);
+          }
+        )
+        .end(fileBuffer);
+    });
+
+    const result = await uploadPromise;
+    console.log("Upload successful:", result.secure_url);
+    return result.secure_url;
+  } catch (error) {
+    console.error("Upload failed:", error);
+    throw new Error("Image upload failed");
+  }
+};
+
+const sendVerificationEmail = async (email, verificationLink) => {
+  const mailOptions = {
+    from: {
+      name: "THIA'S APAREAL",
+      address: process.env.EMAIL_HOST_USER,
+    },
+    to: email,
+    subject: "Email Verification",
+    html: `
+      <div style="width: 100%; height:600px; max-width: 600px; margin: auto; text-align: center;
+      font-family: Arial, sans-serif; border-radius: 10px; overflow: hidden;">
+        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="height: 300px;">
+          <tr>
+            <td style="background: url('https://res.cloudinary.com/dtjgj2odu/image/upload/v1734469383/ThiaLogo_nop3yd.png') 
+            no-repeat center center; background-size: cover;"></td>
+          </tr>
+        </table>
+        <div style="padding: 20px; color:  #0B0F29;">
+          <p style="font-size: 16px;">Click the button below to verify your email. This link is valid for 1 hour.</p>
+          <a href="${verificationLink}" style="display: inline-block; padding: 12px 24px; background: #0B0F29; 
+          border: 5px solid #0B0F29; color: #F20000; text-decoration: none; font-weight: bold; border-radius: 5px;"
+          onmouseover="this.style.background='#FFF'; this.style.color='#0B0F29';"
+          onmouseout="this.style.background='#0B0F29'; this.style.color='#F20000';">Verify Email</a>
+          <p style="margin-top: 20px; font-size: 14px; color:  #0B0F29;">If you did not request this, please ignore this email.</p>
+        </div>
+      </div>
+    `,
+  };
+
+  try {
+    await transporter.sendMail(mailOptions);
+    console.log(`Verification email sent to ${email}`);
+  } catch (error) {
+    console.error(`Error sending email to ${email}:`, error);
+  }
+};
+
+export const verifyEmail = async (req, res) => {
+  const { token } = req.body;
+  console.log("req.body:", req.body);
+
+  if (!token) {
+    return res.status(400).json({
+      success: false,
+      message: "Token and email are required",
+    });
+  }
+
+  try {
+    const decoded = jwt.verify(token, process.env.EMAIL_SECRET); // Use your JWT secret key
+
+    if (!decoded) {
+      return res.status(401).json({ success: false, message: "Invalid token" });
+    }
+    // Extract email
+    const { email } = decoded;
+
+    // const user = await prisma.user.findUnique({
+    //   where: { email },
+    //   select: { id: true },
+    // });
+
+    const user = await client.query("SELECT * FROM userr WHERE email = $1", [
+      email,
+    ]);
+    if (!user) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Unable to find user" });
+    }
+
+    // Update user in database (set resetToken to true or handle verification logic)
+    // await prisma.user.update({
+    //   where: { id: user.id },
+    //   data: { status: true },
+    // });
+
+    // If verification is successful, send a success response
+    return res.status(200).json({
+      success: true,
+      message: "Email verified successfully",
+      data: decoded, // Optionally send decoded data
+    });
+  } catch (error) {
+    console.error("Email verification error:", error.message);
+    return res
+      .status(500)
+      .json({ success: false, message: "Email verification failed" });
   }
 };
 
@@ -188,6 +341,21 @@ export const loginUser = async (req, res) => {
     });
   }
 };
+
+
+
+
+
+export const updateProfile = (req, res)=>{
+  const {} = req.body
+try {
+  
+
+
+} catch (error) {
+  
+}
+}
 export const deleteAccount = async (req, res) => {
   const { email, password } = req.body;
 
@@ -231,4 +399,3 @@ export const deleteAccount = async (req, res) => {
     });
   }
 };
-

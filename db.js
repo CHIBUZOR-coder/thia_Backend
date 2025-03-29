@@ -1,26 +1,22 @@
 import pg from "pg";
-import dotenv from "dotenv"
+import dotenv from "dotenv";
 dotenv.config();
+
 const { Client } = pg;
 
-
-
 const client = new Client({
-  host: "localhost",
-  port: 5432,
-  user: process.env.DB_USER, // Changed to match .env
-  password: process.env.DB_PASSWORD, // Changed to match .env
-  database: process.env.DB_DATABASE, // Changed to match .env
+  host: process.env.DB_HOST, // Supabase host
+  port: process.env.DB_PORT, // Default PostgreSQL port
+  user: process.env.DB_USERNAME, // Supabase username
+  password: process.env.DB_PASSWORD, // Supabase password
+  database: process.env.DB_DATABASE, // Supabase database
+  ssl: { rejectUnauthorized: false }, // Required for Supabase connection
 });
-
-
-console.log(`user: ${process.env.DB_USER}`);
-
 
 (async () => {
   try {
     await client.connect();
-    console.log("Database connected successfully");
+    console.log("Database connected successfully via Session Pooler");
   } catch (error) {
     console.error("Database connection error:", error.message);
   }

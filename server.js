@@ -11,23 +11,24 @@ import { searchRoute } from "./Routers/searchRouter.js";
 const app = express();
 import dotenv from "dotenv";
 
+
 dotenv.config();
 
-
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 5000;
 // console.log(`Type of password: ${typeof process.env.DB_PASSWORD}`);
 //Middlewares
 app.use(
   cors({
-    origin: "http://localhost:5173", // Ensure your frontend URL is allowed
-    methods: ["GET", "POST"], // Allow specific HTTP methods
+    origin: "https://thia-e-comerce.vercel.app", // Ensure your frontend URL is allowed
+    methods: ["GET", "POST", "DELETE", "PUT"], // Allow specific HTTP methods
     credentials: true, // Allow cookies and other credentials
   })
 );
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: true })); 
 
+
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 // Use cookie-parser middleware
 app.use(cookieParser());
@@ -39,8 +40,6 @@ app.use("/", authRouter);
 app.use("/", cartRouter);
 app.use("/", searchRoute);
 app.use("/", paymentRouter);
-
-
 
 //Making Requests
 app.listen(port, () => {

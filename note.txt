@@ -39,8 +39,41 @@
 
 
 
+//user5
+{
+    "firstName": "Confidence",
+    "lastName": "Njoku",
+    "email": "confy@gmail.com",
+    "phone": "08145154157",
+    "address": "Presco",
+    "password": "Amakababe00$",
+    "confirmPassword": "chinwendu11"
+}
 
 
+
+//user6
+{
+    "firstName": "Roselyn",
+    "lastName": "Ude",
+    "email": "roselyn@gmail.com",
+    "phone": "09077639305",
+    "address": "Presco",
+    "password": "Amakababe00$",
+    "confirmPassword": "chinwendu11"
+}
+
+
+//user6
+{
+    "firstName": "Stella",
+    "lastName": "Ode",
+    "email": "stella@gmail.com",
+    "phone": "0811590454",
+    "address": "Dubai",
+    "password": "Amakababe00$",
+    "confirmPassword": "Amakababe00$"
+}
 
 
 //User4 Login

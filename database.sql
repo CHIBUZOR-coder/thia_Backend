@@ -32,7 +32,7 @@ CREATE TABLE IF NOT EXISTS review (
     userId INT NOT NULL,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     -- Automatically record last update time
-    CONSTRAINT user_review FOREIGN KEY (userId) REFERENCES users (id) ON DELETE CASCADE -- If any row in user is deleted , the related row here will also be deleteddue to the ON DELETE CASCADE
+    CONSTRAINT user_review FOREIGN KEY (userId) REFERENCES userr (id) ON DELETE CASCADE -- If any row in user is deleted , the related row here will also be deleteddue to the ON DELETE CASCADE
 );
 CREATE TABLE IF NOT EXISTS cart (
     id SERIAL PRIMARY KEY,
@@ -49,21 +49,21 @@ CREATE TABLE IF NOT EXISTS cartItems (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT cart_key FOREIGN KEY (cartId) REFERENCES cart (id) ON DELETE CASCADE,
-    CONSTRAINT cart_cloth FOREIGN KEY (clothsId) REFERENCES cloths (id) ON DELETE CASCADE,
+    CONSTRAINT cart_cloth FOREIGN KEY (clothsId) REFERENCES cloth (id) ON DELETE CASCADE,
     CONSTRAINT unique_cart_item UNIQUE (cartId, clothsId) --Ensure no duplicate cart - item pairs
 );
 CREATE TABLE IF NOT EXISTS cloth_reciept(
     id SERIAL PRIMARY KEY,
     userId INT NOT NULL,
-    products JSONB NOT NULL
-
+    products JSONB NOT NULL,
+    -- ✅ Added comma
     quantity INT,
     bill NUMERIC(10, 2),
     status status_enum DEFAULT 'Pending',
     image TEXT DEFAULT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT user_key FOREIGN KEY (userId) REFERENCES userr (id) ON DELETE CASCADE,
-)
+    CONSTRAINT user_key FOREIGN KEY (userId) REFERENCES userr (id) ON DELETE CASCADE
+);
 
 
 
@@ -82,3 +82,6 @@ SELECT constraint_name,
 FROM information_schema.key_column_usage
     JOIN information_schema.constraint_column_usage ON constraint_name = constraint_name
 WHERE table_name = 'review';
+
+
+
