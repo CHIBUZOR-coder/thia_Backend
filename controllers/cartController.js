@@ -127,7 +127,7 @@ export const getCart = async (req, res) => {
     // console.log("Cart ID:", cartId); // Debugging log
     const cartitems = await client.query(
       `SELECT 
-       cloth.id AS itemid,
+       cloth.id AS id,
          amount, 
          quantity, 
          brand, 
