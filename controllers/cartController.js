@@ -176,113 +176,110 @@ export const getCart = async (req, res) => {
 
 export const DeleteCartItem = async (req, res) => {
   try {
-    const { userId, itemId } = req.body
-    console.log('body:', req.body)
+    const { userId, itemId } = req.body;
+    console.log("body:", req.body);
 
     if (!itemId) {
       return res
         .status(400)
-        .json({ success: false, message: 'Missing item id' })
+        .json({ success: false, message: "Missing item id" });
     }
     if (!userId) {
       return res
         .status(400)
-        .json({ success: false, message: 'Missing user id' })
+        .json({ success: false, message: "Missing user id" });
     }
-    const parsedItemId = parseInt(itemId, 10)
 
+    const parsedItemId = parseInt(itemId, 10);
+
+    // Fetch user
     const Fetcheduser = await client.query(
       `SELECT * FROM userr WHERE userr.id = $1`,
       [userId]
-    )
+    );
 
-    let user
     if (Fetcheduser.rowCount === 0) {
       return res
         .status(400)
-        .json({ success: false, message: 'Unable to find user!' })
+        .json({ success: false, message: "Unable to find user!" });
     }
-    user = Fetcheduser.rows[0]
-    console.log('user:', user)
+    const user = Fetcheduser.rows[0];
 
-    let Usercart
+    // Fetch user cart
     const FetchedUserCart = await client.query(
       `SELECT * 
-   FROM cartItems 
-   JOIN cart ON cart.id = cartItems.cartId 
-   JOIN cloth ON cloth.id = cartItems.clothsId 
-   WHERE cart.userId = $1`,
+       FROM cartItems 
+       JOIN cart ON cart.id = cartItems.cartId 
+       JOIN cloth ON cloth.id = cartItems.clothsId 
+       WHERE cart.userId = $1`,
       [user.id]
-    )
-
-    // const cloth = await client.query(
-    //   `SELECT id, price FROM cloth WHERE id = $1`,
-    //   [clothId]
-    // )
+    );
 
     if (FetchedUserCart.rowCount < 1) {
       return res
         .status(404)
-        .json({ success: false, message: 'Unable to find cart!' })
+        .json({ success: false, message: "Unable to find cart!" });
     }
-    Usercart = FetchedUserCart.rows
+
+    const Usercart = FetchedUserCart.rows;
+
+    // Fetch item in cart
     const itemCheck = await client.query(
       `SELECT * FROM cartItems WHERE cartItems.clothsId = $1`,
       [parsedItemId]
-    )
+    );
+
     if (itemCheck.rowCount === 0) {
       return res
         .status(404)
-        .json({ success: false, message: 'Cart item not found!' })
+        .json({ success: false, message: "Cart item not found!" });
     }
+
     console.log("item", itemCheck);
-    
+
     if (itemCheck.rows[0].quantity > 1) {
+      // Fetch item price
       const clothPrice = await client.query(
         `SELECT price FROM cloth WHERE id = $1`,
         [parsedItemId]
-      )
-      if (cloth.rowCount === 0) {
+      );
+
+      if (clothPrice.rowCount === 0) {
         return res
           .status(404)
-          .json({ success: false, message: 'Item price not found!' })
+          .json({ success: false, message: "Item price not found!" });
       }
+
+      const updatedQuantity = itemCheck.rows[0].quantity - 1;
+      const updatedAmount = clothPrice.rows[0].price * updatedQuantity;
 
       const UpdatedCartItem = await client.query(
-        'UPDATE cartItems SET quantity = $1, amount = $2, sizee = $3 WHERE id = $4 RETURNING *',
-        [
-          itemCheck.rows[0].quantity - 1,
-          clothPrice.rows[0].price * (itemCheck.rows[0].quantity - 1),
-          itemCheck.rows[0].sizee,
-          itemCheck.rows[0].id
-        ]
-      )
+        `UPDATE cartItems 
+         SET quantity = $1, amount = $2 
+         WHERE id = $3 
+         RETURNING *`,
+        [updatedQuantity, updatedAmount, itemCheck.rows[0].id]
+      );
+
       return res.status(200).json({
         success: true,
-        message: 'cartItem deleted successfully',
-        data: UpdatedCartItem
-      })
+        message: "Cart item quantity reduced successfully",
+        data: UpdatedCartItem.rows[0],
+      });
     } else {
-      const remainingCart = Usercart.filter(item => item.id !== parsedItemId)
-      if (remainingCart.length === Usercart.length) {
-        return res
-          .status(400)
-          .json({ success: false, message: 'Unable to delete cart' })
-      }
-
-      // Delete item from database
+      // Remove the item if the quantity is 1
       await client.query(
         `DELETE FROM cartItems WHERE cartItems.clothsId = $1`,
         [parsedItemId]
-      )
+      );
+
       return res.status(200).json({
         success: true,
-        message: 'cartItem deleted successfully',
-        data: remainingCart
-      })
+        message: "Cart item removed successfully",
+      });
     }
   } catch (error) {
-    console.log('errorMessage:', error.message)
-    return res.status(500).json({ success: false, message: error.message })
+    console.log("errorMessage:", error.message);
+    return res.status(500).json({ success: false, message: error.message });
   }
-}
+};
