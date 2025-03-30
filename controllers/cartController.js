@@ -235,8 +235,10 @@ export const DeleteCartItem = async (req, res) => {
         .status(404)
         .json({ success: false, message: 'Cart item not found!' })
     }
+    console.log("item", itemCheck);
+    
     if (itemCheck.rows[0].quantity > 1) {
-      const cloth = await client.query(
+      const clothPrice = await client.query(
         `SELECT price FROM cloth WHERE id = $1`,
         [parsedItemId]
       )
@@ -250,7 +252,7 @@ export const DeleteCartItem = async (req, res) => {
         'UPDATE cartItems SET quantity = $1, amount = $2, sizee = $3 WHERE id = $4 RETURNING *',
         [
           itemCheck.rows[0].quantity - 1,
-          cloth.rows[0].price * (itemCheck.rows[0].quantity - 1),
+          clothPrice.rows[0].price * (itemCheck.rows[0].quantity - 1),
           itemCheck.rows[0].sizee,
           itemCheck.rows[0].id
         ]
