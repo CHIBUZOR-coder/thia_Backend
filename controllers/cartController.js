@@ -193,40 +193,39 @@ export const DeleteCartItem = async (req, res) => {
     const parsedItemId = parseInt(itemId, 10);
 
     // Fetch user
-    const Fetcheduser = await client.query(
+    const fetchedUser = await client.query(
       `SELECT * FROM userr WHERE userr.id = $1`,
       [userId]
     );
 
-    if (Fetcheduser.rowCount === 0) {
+    if (fetchedUser.rowCount === 0) {
       return res
         .status(400)
         .json({ success: false, message: "Unable to find user!" });
     }
-    const user = Fetcheduser.rows[0];
+    const user = fetchedUser.rows[0];
 
-    // Fetch user cart
-    const FetchedUserCart = await client.query(
-      `SELECT * 
-       FROM cartItems 
-       JOIN cart ON cart.id = cartItems.cartId 
-       JOIN cloth ON cloth.id = cartItems.clothsId 
+    // Fetch user's cart
+    const userCart = await client.query(
+      `SELECT cart.id AS cartId 
+       FROM cart 
        WHERE cart.userId = $1`,
       [user.id]
     );
 
-    if (FetchedUserCart.rowCount < 1) {
+    if (userCart.rowCount === 0) {
       return res
         .status(404)
-        .json({ success: false, message: "Unable to find cart!" });
+        .json({ success: false, message: "Cart not found!" });
     }
 
-    const Usercart = FetchedUserCart.rows;
+    const cartId = userCart.rows[0].cartId;
 
-    // Fetch item in cart
+    // Fetch item in user's cart
     const itemCheck = await client.query(
-      `SELECT * FROM cartItems WHERE cartItems.clothsId = $1`,
-      [parsedItemId]
+      `SELECT * FROM cartItems 
+       WHERE cartItems.clothsId = $1 AND cartItems.cartId = $2`,
+      [parsedItemId, cartId]
     );
 
     if (itemCheck.rowCount === 0) {
@@ -235,7 +234,7 @@ export const DeleteCartItem = async (req, res) => {
         .json({ success: false, message: "Cart item not found!" });
     }
 
-    console.log("item", itemCheck);
+    console.log("Item found in cart:", itemCheck.rows[0]);
 
     if (itemCheck.rows[0].quantity > 1) {
       // Fetch item price
@@ -253,7 +252,7 @@ export const DeleteCartItem = async (req, res) => {
       const updatedQuantity = itemCheck.rows[0].quantity - 1;
       const updatedAmount = clothPrice.rows[0].price * updatedQuantity;
 
-      const UpdatedCartItem = await client.query(
+      const updatedCartItem = await client.query(
         `UPDATE cartItems 
          SET quantity = $1, amount = $2 
          WHERE id = $3 
@@ -264,13 +263,13 @@ export const DeleteCartItem = async (req, res) => {
       return res.status(200).json({
         success: true,
         message: "Cart item quantity reduced successfully",
-        data: UpdatedCartItem.rows[0],
+        data: updatedCartItem.rows[0],
       });
-    } else {
-      // Remove the item if the quantity is 1
+    } else if (itemCheck.rows[0].quantity === 1) {
+      // Remove the item from the cart
       await client.query(
-        `DELETE FROM cartItems WHERE cartItems.clothsId = $1`,
-        [parsedItemId]
+        `DELETE FROM cartItems WHERE clothsId = $1 AND cartId = $2`,
+        [parsedItemId, cartId]
       );
 
       return res.status(200).json({
@@ -283,3 +282,4 @@ export const DeleteCartItem = async (req, res) => {
     return res.status(500).json({ success: false, message: error.message });
   }
 };
+
