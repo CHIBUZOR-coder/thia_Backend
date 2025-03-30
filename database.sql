@@ -1,6 +1,7 @@
 CREATE DATABASE thiadataa;
 CREATE TYPE role_enum AS ENUM ('ADMIN', 'USER');
 CREATE TYPE status_enum AS ENUM ('Completed', 'Pending');
+CREATE TYPE payment_enum AS ENUM ('Paid', 'Pending') 
 CREATE TABLE IF NOT EXISTS cloth (
     id SERIAL PRIMARY KEY,
     brand VARCHAR(255),
@@ -64,9 +65,21 @@ CREATE TABLE IF NOT EXISTS cloth_reciept(
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT user_key FOREIGN KEY (userId) REFERENCES userr (id) ON DELETE CASCADE
 );
-
-
-
+CREATE TABLE IF NOT EXISTS applicants (
+    id SERIAL PRIMARY KEY,
+    firstName TEXT NOT NULL,
+    lastName TEXT NOT NULL,
+    email TEXT UNIQUE created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+)
+ CREATE TABLE IF NOT EXISTS apprentice (
+    id SERIAL PRIMARY KEY,
+    firstName TEXT NOT NULL,
+    lastName TEXT NOT NULL,
+    payment payment_enum DEFAULT 'Pending',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+)
 
  // // // // // // // // Constrian viewing // // // // // // // // // // //
 SELECT conname AS constraint_name,
@@ -82,6 +95,3 @@ SELECT constraint_name,
 FROM information_schema.key_column_usage
     JOIN information_schema.constraint_column_usage ON constraint_name = constraint_name
 WHERE table_name = 'review';
-
-
-
