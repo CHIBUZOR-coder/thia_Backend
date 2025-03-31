@@ -1,11 +1,13 @@
+import bcrypt, { compare } from "bcrypt";
 import client from "../db.js";
-
+import { generateToken } from "../middlewares/generateToken.js";
 //create/register new user
 import dotenv from "dotenv";
-dotenv.config();
-
+import { v4 as uuidv4 } from "uuid"; // <-- Add semicolon here
 import { cloudinary } from "../config/cloudinary.js";
+import jwt from "jsonwebtoken";
 import { transporter } from "../config/email.js";
+dotenv.config();
 
 export const registerApplicants = async (req, res) => {
   //request body
@@ -89,54 +91,30 @@ export const registerApplicants = async (req, res) => {
     });
   }
 };
-
-// const uploadImageToCloudinary = async (fileBuffer) => {
-//   try {
-//     const uploadPromise = new Promise((resolve, reject) => {
-//       cloudinary.uploader
-//         .upload_stream(
-//           { resource_type: "image", folder: "thia_applicant_image" },
-//           (error, result) => {
-//             if (error) {
-//               return reject(error);
-//             }
-//             resolve(result);
-//           }
-//         )
-//         .end(fileBuffer);
-//     });
-
-//     const result = await uploadPromise;
-//     console.log("Upload successful:", result.secure_url);
-//     return result.secure_url;
-//   } catch (error) {
-//     console.error("Upload failed:", error);
-//     throw new Error("Image upload failed");
-//   }
-// };
-
-
-
-
-
-
 const uploadImageToCloudinary = async (fileBuffer) => {
-  return new Promise((resolve, reject) => {
-    const stream = cloudinary.uploader.upload_stream(
-      { resource_type: "image", folder: "thia_applicant_image" },
-      (error, result) => {
-        if (error) {
-          console.error("Upload failed:", error);
-          return reject(new Error("Image upload failed"));
-        }
-        resolve(result.secure_url);
-      }
-    );
-    stream.end(fileBuffer);
-  });
+  try {
+    const uploadPromise = new Promise((resolve, reject) => {
+      cloudinary.uploader
+        .upload_stream(
+          { resource_type: "image", folder: "thia_user_image" },
+          (error, result) => {
+            if (error) {
+              return reject(error);
+            }
+            resolve(result);
+          }
+        )
+        .end(fileBuffer);
+    });
+
+    const result = await uploadPromise;
+    console.log("Upload successful:", result.secure_url);
+    return result.secure_url;
+  } catch (error) {
+    console.error("Upload failed:", error);
+    throw new Error("Image upload failed");
+  }
 };
-
-
 const sendVerificationEmail = async (email, message) => {
   const mailOptions = {
     from: {
