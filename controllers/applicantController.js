@@ -2,12 +2,10 @@ import client from "../db.js";
 
 //create/register new user
 import dotenv from "dotenv";
+dotenv.config();
 
 import { cloudinary } from "../config/cloudinary.js";
-
 import { transporter } from "../config/email.js";
-
-dotenv.config();
 
 export const registerApplicants = async (req, res) => {
   //request body
@@ -39,9 +37,7 @@ export const registerApplicants = async (req, res) => {
         console.log("Image URL after upload:", imageUrl);
       } catch (error) {
         console.error("Error during upload:", error);
-        return res
-          .status(500)
-          .json({ success: false, message: "Image upload failed" });
+        return res.status(500).json({ success: false, message: error.message });
       }
     }
 
@@ -94,15 +90,6 @@ export const registerApplicants = async (req, res) => {
   }
 };
 
-
-
-
-
-
-
-
-
-
 const uploadImageToCloudinary = async (fileBuffer) => {
   try {
     const uploadPromise = new Promise((resolve, reject) => {
@@ -127,22 +114,6 @@ const uploadImageToCloudinary = async (fileBuffer) => {
     throw new Error("Image upload failed");
   }
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 const sendVerificationEmail = async (email, message) => {
   const mailOptions = {
