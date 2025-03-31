@@ -114,16 +114,12 @@ export const getCart = async (req, res) => {
       [user.id]
     );
 
-    if (!cart.id) {
-      return res
-        .statu(404)
-        .json({ success: false, message: "Unable to find user cart!" });
-    }
+    
     //user.id
     // Check if cart exists
     if (cart.rowCount === 0) {
       return res.status(200).json({
-        success: false,
+        success: true,
         message: "No cartItems in user cart.",
         data: cart,
       });
