@@ -121,7 +121,7 @@ export const getCart = async (req, res) => {
       return res.status(200).json({
         success: true,
         message: "No cartItems in user cart.",
-        data: cart,
+        data: cart.rows,
       });
     }
 
