@@ -1,11 +1,10 @@
-import bcrypt, { compare } from "bcrypt";
 import client from "../db.js";
-import { generateToken } from "../middlewares/generateToken.js";
-//create/register new applicant
+
+//create/register new user
 import dotenv from "dotenv";
-import { v4 as uuidv4 } from "uuid"; // <-- Add semicolon here
+
 import { cloudinary } from "../config/cloudinary.js";
-import jwt from "jsonwebtoken";
+
 import { transporter } from "../config/email.js";
 
 dotenv.config();
@@ -65,8 +64,6 @@ export const registerApplicants = async (req, res) => {
       });
     }
 
-
-
     //create new applicant
     const newUserApplicant = await client.query(
       "INSERT INTO applicants  ( email, firstName, lastName, phone, address,  image ) VALUES($1, $2, $3, $4, $5, $6) RETURNING *",
@@ -80,7 +77,6 @@ export const registerApplicants = async (req, res) => {
     // sendVerificationEmail(email, message).catch((err) =>
     //   console.error("Email sending failed:", err)
     // );
-
 
     const userData = newUserApplicant.rows[0];
     delete userData.password; // Remove the password from the response
@@ -98,14 +94,12 @@ export const registerApplicants = async (req, res) => {
   }
 };
 
-
-
 const uploadImageToCloudinary = async (fileBuffer) => {
   try {
     const uploadPromise = new Promise((resolve, reject) => {
       cloudinary.uploader
         .upload_stream(
-          { resource_type: "image", folder: "thia_applicants_image" },
+          { resource_type: "image", folder: "thia_applicants" },
           (error, result) => {
             if (error) {
               return reject(error);
