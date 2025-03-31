@@ -5,6 +5,7 @@ import cookieParser from "cookie-parser";
 import { productRouter } from "./Routers/productRouter.js";
 import { reviewsRoutes } from "./Routers/reviewsRoutes.js";
 import { authRouter } from "./Routers/authUsersRouter.js";
+import { applicantsRouter } from "./Routers/applicantsRouter.js";
 import { cartRouter } from "./Routers/cartRoutr.js";
 import { paymentRouter } from "./Routers/paymentRouter.js";
 import { searchRoute } from "./Routers/searchRouter.js";
@@ -28,6 +29,8 @@ app.use(
 
 
 
+
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -41,6 +44,7 @@ app.use("/", authRouter);
 app.use("/", cartRouter);
 app.use("/", searchRoute);
 app.use("/", paymentRouter);
+app.use("/", applicantsRouter);
 
 //Making Requests
 app.listen(port, () => {
