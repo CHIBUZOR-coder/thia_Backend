@@ -94,12 +94,21 @@ export const registerApplicants = async (req, res) => {
   }
 };
 
+
+
+
+
+
+
+
+
+
 const uploadImageToCloudinary = async (fileBuffer) => {
   try {
     const uploadPromise = new Promise((resolve, reject) => {
       cloudinary.uploader
         .upload_stream(
-          { resource_type: "image", folder: "thia_applicants" },
+          { resource_type: "image", folder: "thia_applicant_image" },
           (error, result) => {
             if (error) {
               return reject(error);
@@ -118,6 +127,22 @@ const uploadImageToCloudinary = async (fileBuffer) => {
     throw new Error("Image upload failed");
   }
 };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 const sendVerificationEmail = async (email, message) => {
   const mailOptions = {
