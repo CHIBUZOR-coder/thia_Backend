@@ -90,30 +90,52 @@ export const registerApplicants = async (req, res) => {
   }
 };
 
-const uploadImageToCloudinary = async (fileBuffer) => {
-  try {
-    const uploadPromise = new Promise((resolve, reject) => {
-      cloudinary.uploader
-        .upload_stream(
-          { resource_type: "image", folder: "thia_applicant_image" },
-          (error, result) => {
-            if (error) {
-              return reject(error);
-            }
-            resolve(result);
-          }
-        )
-        .end(fileBuffer);
-    });
+// const uploadImageToCloudinary = async (fileBuffer) => {
+//   try {
+//     const uploadPromise = new Promise((resolve, reject) => {
+//       cloudinary.uploader
+//         .upload_stream(
+//           { resource_type: "image", folder: "thia_applicant_image" },
+//           (error, result) => {
+//             if (error) {
+//               return reject(error);
+//             }
+//             resolve(result);
+//           }
+//         )
+//         .end(fileBuffer);
+//     });
 
-    const result = await uploadPromise;
-    console.log("Upload successful:", result.secure_url);
-    return result.secure_url;
-  } catch (error) {
-    console.error("Upload failed:", error);
-    throw new Error("Image upload failed");
-  }
+//     const result = await uploadPromise;
+//     console.log("Upload successful:", result.secure_url);
+//     return result.secure_url;
+//   } catch (error) {
+//     console.error("Upload failed:", error);
+//     throw new Error("Image upload failed");
+//   }
+// };
+
+
+
+
+
+
+const uploadImageToCloudinary = async (fileBuffer) => {
+  return new Promise((resolve, reject) => {
+    const stream = cloudinary.uploader.upload_stream(
+      { resource_type: "image", folder: "thia_applicant_image" },
+      (error, result) => {
+        if (error) {
+          console.error("Upload failed:", error);
+          return reject(new Error("Image upload failed"));
+        }
+        resolve(result.secure_url);
+      }
+    );
+    stream.end(fileBuffer);
+  });
 };
+
 
 const sendVerificationEmail = async (email, message) => {
   const mailOptions = {
