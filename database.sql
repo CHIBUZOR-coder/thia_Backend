@@ -1,8 +1,7 @@
 CREATE DATABASE thiadataa;
 CREATE TYPE role_enum AS ENUM ('ADMIN', 'USER');
 CREATE TYPE status_enum AS ENUM ('Completed', 'Pending');
-CREATE TYPE payment_enum AS ENUM ('Paid', 'Pending') 
-CREATE TABLE IF NOT EXISTS cloth (
+CREATE TYPE payment_enum AS ENUM ('Paid', 'Pending') CREATE TABLE IF NOT EXISTS cloth (
     id SERIAL PRIMARY KEY,
     brand VARCHAR(255),
     style VARCHAR(255),
@@ -71,17 +70,25 @@ CREATE TABLE IF NOT EXISTS applicants (
     lastName TEXT NOT NULL,
     email TEXT UNIQUE created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-)
- CREATE TABLE IF NOT EXISTS apprentice (
+) CREATE TABLE IF NOT EXISTS apprentice (
     id SERIAL PRIMARY KEY,
     firstName TEXT NOT NULL,
     lastName TEXT NOT NULL,
     payment payment_enum DEFAULT 'Pending',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-)
+    
+) 
 
- // // // // // // // // Constrian viewing // // // // // // // // // // //
+
+CREATE TABLE IF NOT EXISTS applicants (
+    id SERIAL PRIMARY KEY,
+    firstName TEXT,
+    lastName TEXT,
+    email TEXT UNIQUE,
+    image TEXT DEFAULT NULL,
+);
+// // // // // // // // Constrian viewing // // // // // // // // // // //
 SELECT conname AS constraint_name,
     conrelid::regclass AS table_name,
     confrelid::regclass AS referenced_table
