@@ -91,6 +91,21 @@ export const registerApplicants = async (req, res) => {
     });
   }
 };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 const uploadImageToCloudinary = async (fileBuffer) => {
   try {
     const uploadPromise = new Promise((resolve, reject) => {
