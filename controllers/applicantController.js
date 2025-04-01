@@ -45,7 +45,7 @@ export const registerApplicants = async (req, res) => {
 
     //check if applicant already exist
     const applicant = await client.query(
-      "SELECT * FROM userr WHERE email = $1 ",
+      "SELECT * FROM applicants  WHERE email = $1 ",
       [email]
     );
     if (applicant.rowCount > 0)
