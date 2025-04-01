@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
 
-const verifyToken = (req, res, next) => {
+const verifyAdminToken = (req, res, next) => {
   console.log(req.cookies); // Add this line to debug
   const token = req.cookies.auth_token;
 
@@ -13,6 +13,12 @@ const verifyToken = (req, res, next) => {
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
     req.user = decoded;
+    if (req.user.role !== "ADMIN") {
+      return res.status(403).json({
+        success: false,
+        message: "You are not authorized to access this route!",
+      });
+    }
     next();
   } catch (error) {
     return res
@@ -21,4 +27,4 @@ const verifyToken = (req, res, next) => {
   }
 };
 
-export { verifyToken };
+export { verifyAdminToken };

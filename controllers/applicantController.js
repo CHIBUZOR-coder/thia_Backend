@@ -155,3 +155,26 @@ const sendVerificationEmail = async (email, message) => {
     console.error(`Error sending email to ${email}:`, error);
   }
 };
+
+export const getApplicants = async (req, res) => {
+  try {
+    const applicants = await client.query("SELECT * FROM applicants");
+    if (applicants.rowCount < 0) {
+      return res.status(400).json({
+        success: false,
+        message: "There are no applicants data currently",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Applicants data recived successfully!",
+      data: applicants.rows,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Unable to retriev applicants data! ",
+    });
+  }
+};
