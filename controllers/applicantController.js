@@ -92,26 +92,12 @@ export const registerApplicants = async (req, res) => {
   }
 };
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 const uploadImageToCloudinary = async (fileBuffer) => {
   try {
     const uploadPromise = new Promise((resolve, reject) => {
       cloudinary.uploader
         .upload_stream(
-          { resource_type: "image", folder: "thia_user_image" },
+          { resource_type: "image", folder: "thia_applicants_image" },
           (error, result) => {
             if (error) {
               return reject(error);
@@ -143,8 +129,11 @@ const sendVerificationEmail = async (email, message) => {
       font-family: Arial, sans-serif; border-radius: 10px; overflow: hidden;">
         <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="height: 300px;">
           <tr>
-            <td style="background: url('https://res.cloudinary.com/dtjgj2odu/image/upload/v1734469383/ThiaLogo_nop3yd.png') 
-            no-repeat center center; background-size: cover;"></td>
+          <td style="text-align: center; padding: 20px;">
+              <img src="https://res.cloudinary.com/dtjgj2odu/image/upload/v1734469383/ThiaLogo_nop3yd.png" 
+              alt="Thia's Apparel Logo" width="120" height="120" 
+              style="max-width: 100%; display: block; margin: auto; border-radius: 50%;">
+            </td>
           </tr>
         </table>
         <div style="padding: 20px; color:  #0B0F29;">
