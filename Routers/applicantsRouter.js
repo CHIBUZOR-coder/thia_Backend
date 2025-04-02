@@ -15,5 +15,6 @@ applicantsRouter.post(
   registerApplicants
 );
 applicantsRouter.get("/getApplicants", verifyAdminToken, getApplicants);
+applicantsRouter.delete("/deleteApplicants", verifyAdminToken, getApplicants);
 
 export { applicantsRouter };

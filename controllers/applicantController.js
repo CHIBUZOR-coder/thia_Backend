@@ -178,3 +178,30 @@ export const getApplicants = async (req, res) => {
     });
   }
 };
+
+export const deleteApplcant = async (req, res) => {
+  try {
+    const { id } = req.body;
+    const parsedId = parent(id);
+    const applicant = await client.query(
+      "SELECT * FROM applicants WHERE id = $1",
+      [parsedId]
+    );
+
+    if (!applicant.rowCount < 1) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Applicant not found" });
+    }
+
+    const deletedApplicant = await query(
+      "DELETE FROM applicants WHERE id = $1",
+      [parsedId]
+    );
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message || "Internal Server Error",
+    });
+  }
+};
