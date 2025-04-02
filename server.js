@@ -6,6 +6,7 @@ import { productRouter } from "./Routers/productRouter.js";
 import { reviewsRoutes } from "./Routers/reviewsRoutes.js";
 import { authRouter } from "./Routers/authUsersRouter.js";
 import { applicantsRouter } from "./Routers/applicantsRouter.js";
+import { apprenticeRouter } from "./Routers/apprenticeRouter.js";
 import { cartRouter } from "./Routers/cartRoutr.js";
 import { paymentRouter } from "./Routers/paymentRouter.js";
 import { searchRoute } from "./Routers/searchRouter.js";
@@ -45,6 +46,7 @@ app.use("/", cartRouter);
 app.use("/", searchRoute);
 app.use("/", paymentRouter);
 app.use("/", applicantsRouter);
+app.use("/", apprenticeRouter);
 
 //Making Requests
 app.listen(port, () => {
