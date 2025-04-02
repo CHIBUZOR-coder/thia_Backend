@@ -7,7 +7,7 @@ import {
   registerApprentice,
   getApprentice,
   deleteApprentice,
-} from "../controllers/Apprentice.js";
+} from "../controllers/ApprenticeController.js";
 
 apprenticeRouter.post(
   "/registerApprentice",
@@ -20,5 +20,6 @@ apprenticeRouter.delete(
   verifyAdminToken,
   deleteApprentice
 );
+
 
 export { apprenticeRouter };
