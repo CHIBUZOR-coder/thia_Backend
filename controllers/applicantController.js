@@ -179,25 +179,60 @@ export const getApplicants = async (req, res) => {
   }
 };
 
-export const deleteApplcant = async (req, res) => {
+export const deleteApplicant = async (req, res) => {
   try {
     const { id } = req.body;
-    const parsedId = parent(id);
+    const parsedId = parseInt(id); // Convert ID to integer
+
+    if (isNaN(parsedId)) {
+      return res.status(400).json({ success: false, message: "Invalid ID" });
+    }
+
+    // Ensure client is imported and connected
     const applicant = await client.query(
       "SELECT * FROM applicants WHERE id = $1",
       [parsedId]
     );
 
-    if (!applicant.rowCount < 1) {
+    if (applicant.rowCount < 1) {
       return res
         .status(404)
         .json({ success: false, message: "Applicant not found" });
     }
 
-    const deletedApplicant = await query(
-      "DELETE FROM applicants WHERE id = $1",
+    const deletedApplicant = await client.query(
+      "DELETE FROM applicants WHERE id = $1 RETURNING *",
       [parsedId]
     );
+
+    if (deletedApplicant.rowCount > 0) {
+      return res.status(200).json({
+        success: true,
+        message: "Applicant deleted successfully",
+        data: deletedApplicant.rows[0], // Send deleted record (optional)
+      });
+    } else {
+      return res.status(400).json({
+        success: false,
+        message: "Failed to delete applicant",
+      });
+    }
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message || "Internal Server Error",
+    });
+  }
+};
+
+export const AlldeleteApplcant = async (req, res) => {
+  try {
+    const deletedApplicant = await query("DELETE FROM applicants");
+
+    return res.status(200).json({
+      success: true,
+      message: "All applicants deleted successfully",
+    });
   } catch (error) {
     return res.status(500).json({
       success: false,
