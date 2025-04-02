@@ -183,6 +183,7 @@ export const deleteApplicant = async (req, res) => {
   try {
     const { id } = req.body;
     const parsedId = parseInt(id); // Convert ID to integer
+    console.log(parsedId);
 
     if (isNaN(parsedId)) {
       return res.status(400).json({ success: false, message: "Invalid ID" });
