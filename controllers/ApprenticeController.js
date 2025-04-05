@@ -14,6 +14,8 @@ export const registerApprentice = async (req, res) => {
   try {
     const { email, firstName, lastName, phone, address, image } = req.body;
 
+    console.log("reqbody:", req.body);
+
     // Check if all required fields are provided
     if (!email) {
       return res.status(400).json({
