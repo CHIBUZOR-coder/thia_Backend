@@ -76,7 +76,7 @@ export const registerApprentice = async (req, res) => {
     );
 
     const PaymentLink = `http://localhost:5173/payment?email=${email}`;
-    const message = `Congratulation, ${firstname} ${lastname}, You have be addmited to Thia's Appareal. Click the below to start your payment procedure. Or Visist our main Office at Mile 50 for addmission procedures. You can also call 08134348537 for more information on addmission procedures`;
+    const message = `Congratulation, ${firstname} ${lastname}, You have be addmited to Thia's Appareal. Click below to start your payment procedure. Or Visist our main Office at Mile 50 for addmission procedures. You can also call 08134348537 for more information on addmission procedures`;
 
     await sendVerificationEmail(email, message, PaymentLink);
     // sendVerificationEmail(email, message).catch((err) =>
@@ -119,18 +119,18 @@ const sendVerificationEmail = async (email, message, PaymentLink) => {
           </tr>
         </table>
         <div style="padding: 20px; color:  #0B0F29;">
-          <p style="font-size: 16px;">Click the button below to verify your email. This link is valid for 1 hour.</p>
+         
           <p  style="display: inline-block; padding: 12px 24px; background: #F1ECEC; 
           border: 5px solid #0B0F29; color: #656363; text-decoration: none; font-weight: bold; border-radius: 5px;"
           
          >${message}</p>
-
+ <p style="font-size: 16px;">Click the button below to verify your email. This link is valid for 1 hour.</p>
           <a href="${PaymentLink}" style="display: inline-block; padding: 12px 24px; background: #0B0F29; 
           border: 5px solid #0B0F29; color: #F20000; text-decoration: none; font-weight: bold; border-radius: 5px;"
           onmouseover="this.style.background='#FFF'; this.style.color='#0B0F29';"
           onmouseout="this.style.background='#0B0F29'; this.style.color='#F20000';">Start Payment</a>
-
-          <p style="margin-top: 20px; font-size: 14px; color:  #0B0F29;">If you did not request this, please ignore this email.</p>
+ <p style="font-size: 16px;">If you did not request this, please ignore this email.</p>
+       
         </div>
       </div>
     `,
