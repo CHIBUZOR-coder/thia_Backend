@@ -15,21 +15,49 @@ export const registerApprentice = async (req, res) => {
     const { email, firstName, lastName, phone, address, image } = req.body;
 
     // Check if all required fields are provided
-    if (!email || !firstName || !lastName || !phone || !address || image) {
+    if (!email) {
       return res.status(400).json({
         success: false,
-        message: "A feild is missing. All fields are required!",
+        message: "Email feild is missing and required!",
+      });
+    }
+    if (!firstName) {
+      return res.status(400).json({
+        success: false,
+        message: "FirstName is missing and is required!",
+      });
+    }
+    if (!lastName) {
+      return res.status(400).json({
+        success: false,
+        message: "LastName is missing and is required!",
       });
     }
 
-
+    if (!phone) {
+      return res.status(400).json({
+        success: false,
+        message: "Phone feild is missing and is required!",
+      });
+    }
+    if (!image) {
+      return res.status(400).json({
+        success: false,
+        message: "Image feild is missing and is required!",
+      });
+    }
+    if (!address) {
+      return res.status(400).json({
+        success: false,
+        message: "Address feild is missing and is required!",
+      });
+    }
 
     //check if applicant already exist
     const apprentice = await client.query(
       "SELECT * FROM apprentice  WHERE email = $1 ",
       [email]
     );
-
 
     if (apprentice.rowCount > 0)
       return res
@@ -66,7 +94,6 @@ export const registerApprentice = async (req, res) => {
     });
   }
 };
-
 
 const sendVerificationEmail = async (email, message) => {
   const mailOptions = {
