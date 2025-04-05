@@ -124,7 +124,7 @@ const sendVerificationEmail = async (email, message, PaymentLink) => {
           border: 5px solid #0B0F29; color: #656363; text-decoration: none; font-weight: bold; border-radius: 5px;"
           
          >${message}</p>
- <p style="font-size: 16px;">Click the button below to verify your email. This link is valid for 1 hour.</p>
+
           <a href="${PaymentLink}" style="display: inline-block; padding: 12px 24px; background: #0B0F29; 
           border: 5px solid #0B0F29; color: #F20000; text-decoration: none; font-weight: bold; border-radius: 5px;"
           onmouseover="this.style.background='#FFF'; this.style.color='#0B0F29';"
