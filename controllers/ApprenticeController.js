@@ -258,7 +258,7 @@ export const initialisePayment = async (req, res) => {
     if (!apprentice) {
       return res.status(404).json({
         success: false,
-        message: "Unable to find user",
+        message: `Apprentice with the email ${email} is not in the database`,
       });
     }
 

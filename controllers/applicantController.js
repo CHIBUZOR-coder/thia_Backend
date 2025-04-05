@@ -69,7 +69,7 @@ export const registerApplicants = async (req, res) => {
     );
 
     // const verificationLink = `http://localhost:5173/verifyEmail?token=${verifyEmailToken}`;
-    const message = ` Hi ${email}, Your Application was successfull. Thank you for choosing Thia's Appareal,you will recive an addmission email if you are selected  `;
+    const message = ` Hi ${email}, Your Application was successfull. Thank you for choosing Thia's Appareal, you will recive an addmission email if you are selected  `;
 
     await sendVerificationEmail(email, message);
     // sendVerificationEmail(email, message).catch((err) =>
