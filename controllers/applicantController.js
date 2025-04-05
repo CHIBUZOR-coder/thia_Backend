@@ -48,7 +48,7 @@ export const registerApplicants = async (req, res) => {
       "SELECT * FROM applicants  WHERE email = $1 ",
       [email]
     );
-    if (applicant.rowCount > 0)
+    if (applicant.rows[0])
       return res
         .status(400)
         .json({ success: false, message: "Applicant already exists" });
