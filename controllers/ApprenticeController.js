@@ -7,6 +7,7 @@ import { v4 as uuidv4 } from "uuid"; // <-- Add semicolon here
 import { cloudinary } from "../config/cloudinary.js";
 import jwt from "jsonwebtoken";
 import { transporter } from "../config/email.js";
+const FLW_SECRETE_KEY = process.env.FLW_SECRETE_KEY;
 dotenv.config();
 
 export const registerApprentice = async (req, res) => {
@@ -74,10 +75,10 @@ export const registerApprentice = async (req, res) => {
       [email, firstname, lastname, phone, address, image]
     );
 
-    // const verificationLink = `http://localhost:5173/verifyEmail?token=${verifyEmailToken}`;
-    const message = `Congratulatio for more information on addmission procedures Visist our main Office at Mile 50 for addmission procedures or call 08134348537 for more information on addmission procedures`;
+    const PaymentLink = `http://localhost:5173/payment?email=${email}`;
+    const message = `Congratulation, ${firstname} ${lastname}, You have be addmited to Thia's Appareal. Click the below to start your payment procedure. Or Visist our main Office at Mile 50 for addmission procedures. You can also call 08134348537 for more information on addmission procedures`;
 
-    await sendVerificationEmail(email, message);
+    await sendVerificationEmail(email, message, PaymentLink);
     // sendVerificationEmail(email, message).catch((err) =>
     //   console.error("Email sending failed:", err)
     // );
@@ -97,7 +98,7 @@ export const registerApprentice = async (req, res) => {
   }
 };
 
-const sendVerificationEmail = async (email, message) => {
+const sendVerificationEmail = async (email, message, PaymentLink) => {
   const mailOptions = {
     from: {
       name: "THIA'S APAREAL",
@@ -123,6 +124,12 @@ const sendVerificationEmail = async (email, message) => {
           border: 5px solid #0B0F29; color: #656363; text-decoration: none; font-weight: bold; border-radius: 5px;"
           
          >${message}</p>
+
+          <a href="${PaymentLink}" style="display: inline-block; padding: 12px 24px; background: #0B0F29; 
+          border: 5px solid #0B0F29; color: #F20000; text-decoration: none; font-weight: bold; border-radius: 5px;"
+          onmouseover="this.style.background='#FFF'; this.style.color='#0B0F29';"
+          onmouseout="this.style.background='#0B0F29'; this.style.color='#F20000';">Start Payment</a>
+
           <p style="margin-top: 20px; font-size: 14px; color:  #0B0F29;">If you did not request this, please ignore this email.</p>
         </div>
       </div>
@@ -219,6 +226,225 @@ export const AlldeleteApplcant = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: error.message || "Internal Server Error",
+    });
+  }
+};
+
+export const initialisePayment = async (req, res) => {
+  try {
+    const { email } = req.body;
+    const bill = 20000;
+    if (!email) {
+      return res.status(400).json({
+        success: false,
+        message: "Email is required!",
+      });
+    }
+
+    if (!bill || isNaN(parseFloat(bill))) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid bill amount",
+      });
+    }
+
+    const apprenticeResult = await client.query(
+      "SELECT * FROM apprentice WHERE email = $1",
+      [email]
+    );
+
+    const apprentice = apprenticeResult.rows[0];
+
+    if (!apprentice) {
+      return res.status(404).json({
+        success: false,
+        message: "Unable to find user",
+      });
+    }
+
+    const orderId = uuidv4();
+    const redirectUrl = `http://localhost:5173/thankyou?orderId=${orderId}`;
+
+    // Generate a dynamic payment link from Flutterwave API
+    const response = await fetch("https://api.flutterwave.com/v3/payments", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${FLW_SECRETE_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        tx_ref: orderId,
+        amount: bill,
+        currency: "NGN",
+        redirect_url: redirectUrl, // Redirect user after payment
+        customer: {
+          email: apprentice.email,
+          name: `${apprentice.firstname} ${apprentice.lastname}`,
+          phonenumber: apprentice.phone,
+          address: apprentice.address,
+        },
+        customizations: {
+          title: "Thia Fashion",
+          description: "Payment for Addmission fee",
+          logo: "https://res.cloudinary.com/dtjgj2odu/image/upload/v1734469383/ThiaLogo_nop3yd.png",
+        },
+
+        meta: {
+          userId: apprentice.id,
+          orderId,
+          amount: bill,
+          startDate: "January 2025",
+          endDate: "December 2025",
+          course: "Fashion Design",
+        },
+      }),
+    });
+
+    // 5531 8866 5214 2950
+
+    const data = await response.json();
+
+    if (data.status !== "success") {
+      return res
+        .status(500)
+        .json({ success: false, message: "Failed to generate payment link" });
+    }
+
+    // if (data.data && data.data.meta && data.data.meta.products) {
+    //   try {
+    //     products = JSON.parse(data.data.meta.products);
+    //     console.log("Parsed Products:", products);
+    //   } catch (error) {
+    //     console.error("Error parsing products JSON:", error);
+    //   }
+    // }
+
+    console.log("Flutterwave Response:", data);
+    console.log("Redirect URL:", redirectUrl);
+
+    // return res.status(200).json({
+    //   success: true,
+    //   message: "Payment link generated successfully",
+    //   payment_link: data.data.link, // Use Flutterwave's dynamic link
+    //   orderId,
+    //   customer: {
+    //     email: user.email,
+    //     name: user.name,
+    //     phonenumber: user.phone,
+    //     products,
+    //   },
+    // });
+  } catch (error) {
+    console.error(" Subscription error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Subscription initiation failed due to an internal error",
+    });
+  }
+};
+
+export const verifyPyment = async (req, res) => {
+  try {
+    const { transaction_id, orderId, email } = req.body;
+    console.log("reqBody:", req.body);
+
+    if (!transaction_id || !orderId || !email) {
+      return res.status(400).json({
+        success: false,
+        message: "transaction_Id, orderId, and email are required",
+      });
+    }
+
+    const response = await fetch(
+      `https://api.flutterwave.com/v3/transactions/${transaction_id}/verify`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${FLW_SECRETE_KEY}`,
+        },
+      }
+    );
+
+    const data = await response.json();
+    let products;
+    let bill;
+    if (data.data && data.data.meta && data.data.meta.products) {
+      try {
+        products = JSON.parse(data.data.meta.products);
+        bill = data?.data?.amount_settled;
+        console.log("Parsed Products:", products);
+      } catch (error) {
+        console.error("Error parsing products JSON:", error);
+      }
+    }
+    if (!data.data || data.status !== "success") {
+      return res
+        .status(400)
+        .json({ success: false, message: "Payment failed" });
+    }
+    console.log("verified data", data);
+
+    const FetchedUser = await client.query(
+      "SELECT * FROM userr WHERE email = $1",
+      [email]
+    );
+    const user = FetchedUser.rows[0];
+    if (!user) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Unable to find user" });
+    }
+
+    console.log("user:");
+
+    let reciept;
+    // const existingReceipt = await client.query(
+    //   "SELECT * FROM cloth_receipt WHERE userId = $1 AND orderId = $2 AND transaction_id = $3",
+    //   [user.id, orderId, transaction_id]
+    // );
+
+    const existingReceipt = await client.query(
+      "SELECT id FROM cloth_receipt WHERE orderId = $1 AND transaction_id = $2",
+      [orderId, transaction_id]
+    );
+
+    if (existingReceipt.rows.length > 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Receipt already exists for this transaction and order!",
+      });
+    }
+
+    const totalQuantity = products.reduce(
+      (sum, item) => sum + (parseInt(item.quantity, 10) || 0),
+      0
+    );
+
+    reciept = await client.query(
+      `INSERT INTO cloth_receipt (userId, orderId, transaction_id, products, bill,  product_Quantity, status)
+       VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
+      [
+        user.id,
+        orderId,
+        transaction_id,
+        JSON.stringify(products),
+        bill,
+        totalQuantity,
+        "Completed",
+      ]
+    );
+
+    await client.query("DELETE FROM cart WHERE cart.userId = $1", [user.id]);
+
+    return res.status(200).json({
+      success: true,
+      message: "Payment was successfull",
+      data: reciept.rows[0],
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message || "Somthing went wrong",
     });
   }
 };
