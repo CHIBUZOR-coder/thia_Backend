@@ -360,36 +360,36 @@ export const verifyPyment = async () => {
     );
 
     const data = await response.json();
-    let products;
-    let bill;
-    if (data.data && data.data.meta && data.data.meta.products) {
-      try {
-        products = JSON.parse(data.data.meta.products);
-        bill = data?.data?.amount_settled;
-        console.log("Parsed Products:", products);
-      } catch (error) {
-        console.error("Error parsing products JSON:", error);
-      }
-    }
-    if (!data.data || data.status !== "success") {
-      return res
-        .status(400)
-        .json({ success: false, message: "Payment failed" });
-    }
+
+    // let bill;
+    // if (data.data && data.data.meta) {
+    //   try {
+
+    //     bill = data?.data?.amount_settled;
+    //     // console.log("Parsed Products:", products);
+    //   } catch (error) {
+    //     console.error("Error parsing products JSON:", error);
+    //   }
+    // }
+    // if (!data.data || data.status !== "success") {
+    //   return res
+    //     .status(400)
+    //     .json({ success: false, message: "Payment failed" });
+    // }
     console.log("verified data", data);
 
-    const FetchedUser = await client.query(
-      "SELECT * FROM userr WHERE email = $1",
+    const Fetchedapprentice = await client.query(
+      "SELECT * FROM apprentice WHERE email = $1",
       [email]
     );
-    const user = FetchedUser.rows[0];
-    if (!user) {
-      return res
-        .status(404)
-        .json({ success: false, message: "Unable to find user" });
-    }
 
-    console.log("user:");
+    const apprentice = Fetchedapprentice.rows[0];
+    if (!apprentice) {
+      return res.status(404).json({
+        success: false,
+        message: "Unable to find Apprentice in database",
+      });
+    }
 
     let reciept;
     // const existingReceipt = await client.query(
@@ -409,31 +409,16 @@ export const verifyPyment = async () => {
       });
     }
 
-    const totalQuantity = products.reduce(
-      (sum, item) => sum + (parseInt(item.quantity, 10) || 0),
-      0
-    );
-
     reciept = await client.query(
-      `INSERT INTO cloth_receipt (userId, orderId, transaction_id, products, bill,  product_Quantity, status)
-       VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
-      [
-        user.id,
-        orderId,
-        transaction_id,
-        JSON.stringify(products),
-        bill,
-        totalQuantity,
-        "Completed",
-      ]
+      `INSERT INTO apprentice_receipt (apprenticeId, orderId, transaction_id, bill, status)
+       VALUES ($1, $2, $3, $4, $5,) RETURNING *`,
+      [apprentice.Id, orderId, transaction_id, bill, "Completed"]
     );
-
-    await client.query("DELETE FROM cart WHERE cart.userId = $1", [user.id]);
 
     return res.status(200).json({
       success: true,
       message: "Payment was successfull",
-      data: reciept.rows[0],
+      data: apprentice.rows[0],
     });
   } catch (error) {
     return res.status(500).json({

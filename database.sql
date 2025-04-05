@@ -58,6 +58,7 @@ CREATE TABLE IF NOT EXISTS cloth_reciept(
     products JSONB NOT NULL,
     -- ✅ Added comma
     quantity INT,
+    orderId TEXT,
     bill NUMERIC(10, 2),
     status status_enum DEFAULT 'Pending',
     image TEXT DEFAULT NULL,
@@ -70,20 +71,25 @@ CREATE TABLE IF NOT EXISTS applicants (
     lastName TEXT NOT NULL,
     email TEXT UNIQUE created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-)
-
-
- CREATE TABLE IF NOT EXISTS apprentice (
+) CREATE TABLE IF NOT EXISTS apprentice (
     id SERIAL PRIMARY KEY,
     firstName TEXT NOT NULL,
     lastName TEXT NOT NULL,
     payment payment_enum DEFAULT 'Pending',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    
+
+
 ) 
 
-
+CREATE TABLE IF NOT EXISTS apprentice_reciept(
+    id SERIAL PRIMARY KEY,
+    apprenticeId INT NOT NULL,
+    bill NUMERIC(10, 2),
+    orderId TEXT transactionId TEXT status status_enum DEFAULT 'Pending',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT apprentice_key FOREIGN KEY (apprenticeId) REFERENCES apprentice (id) ON DELETE CASCADE
+);
 CREATE TABLE IF NOT EXISTS applicants (
     id SERIAL PRIMARY KEY,
     firstName TEXT,
