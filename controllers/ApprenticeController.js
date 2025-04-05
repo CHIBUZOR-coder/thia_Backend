@@ -322,18 +322,12 @@ export const initialisePayment = async (req, res) => {
     console.log("Flutterwave Response:", data);
     console.log("Redirect URL:", redirectUrl);
 
-    // return res.status(200).json({
-    //   success: true,
-    //   message: "Payment link generated successfully",
-    //   payment_link: data.data.link, // Use Flutterwave's dynamic link
-    //   orderId,
-    //   customer: {
-    //     email: user.email,
-    //     name: user.name,
-    //     phonenumber: user.phone,
-    //     products,
-    //   },
-    // });
+    return res.status(200).json({
+      success: true,
+      message: "Payment link generated successfully",
+      payment_link: data.data.link, // Use Flutterwave's dynamic link
+      orderId,
+    });
   } catch (error) {
     console.error(" Subscription error:", error);
     return res.status(500).json({
@@ -343,7 +337,7 @@ export const initialisePayment = async (req, res) => {
   }
 };
 
-export const verifyPyment = async (req, res) => {
+export const verifyPyment = async () => {
   try {
     const { transaction_id, orderId, email } = req.body;
     console.log("reqBody:", req.body);

@@ -509,3 +509,16 @@ export default BlogListItem;
 
 
                           
+
+
+
+
+
+Flutterwave Response: {
+  status: 'success',
+  message: 'Hosted Link',
+  data: {
+    link: 'https://checkout-v2.dev-flutterwave.com/v3/hosted/pay/f1baadfff476498fd5c0'
+  }
+}
+Redirect URL: http://localhost:5173/thankyou?orderId=6d00fa06-bc92-4b34-b9aa-f20acef98b70
