@@ -12,7 +12,7 @@ dotenv.config();
 export const registerApprentice = async (req, res) => {
   //request body
   try {
-    const { email, firstName, lastName, phone, address, image } = req.body;
+    const { email, firstname, lastname, phone, address, image } = req.body;
 
     console.log("reqbody:", req.body);
 
@@ -23,13 +23,13 @@ export const registerApprentice = async (req, res) => {
         message: "Email feild is missing and required!",
       });
     }
-    if (!firstName) {
+    if (!firstname) {
       return res.status(400).json({
         success: false,
         message: "FirstName is missing and is required!",
       });
     }
-    if (!lastName) {
+    if (!lastname) {
       return res.status(400).json({
         success: false,
         message: "LastName is missing and is required!",
@@ -70,8 +70,8 @@ export const registerApprentice = async (req, res) => {
 
     //create new applicant
     const newUserApprentice = await client.query(
-      "INSERT INTO apprentice  ( email, firstName, lastName, phone, address,  image ) VALUES($1, $2, $3, $4, $5, $6) RETURNING *",
-      [email, firstName, lastName, phone, address, image]
+      "INSERT INTO apprentice  ( email, firstname, lastname, phone, address,  image ) VALUES($1, $2, $3, $4, $5, $6) RETURNING *",
+      [email, firstname, lastname, phone, address, image]
     );
 
     // const verificationLink = `http://localhost:5173/verifyEmail?token=${verifyEmailToken}`;
