@@ -241,6 +241,7 @@ export const initialisePayment = async (req, res) => {
       });
     }
 
+    
     if (!bill || isNaN(parseFloat(bill))) {
       return res.status(400).json({
         success: false,
@@ -378,48 +379,44 @@ export const verifyPyment = async () => {
     // }
     console.log("verified data", data);
 
-    const Fetchedapprentice = await client.query(
-      "SELECT * FROM apprentice WHERE email = $1",
-      [email]
-    );
-
-    const apprentice = Fetchedapprentice.rows[0];
-    if (!apprentice) {
-      return res.status(404).json({
-        success: false,
-        message: "Unable to find Apprentice in database",
-      });
-    }
-
-    let reciept;
-    // const existingReceipt = await client.query(
-    //   "SELECT * FROM cloth_receipt WHERE userId = $1 AND orderId = $2 AND transaction_id = $3",
-    //   [user.id, orderId, transaction_id]
+    // const Fetchedapprentice = await client.query(
+    //   "SELECT * FROM apprentice WHERE email = $1",
+    //   [email]
     // );
 
-    const existingReceipt = await client.query(
-      "SELECT id FROM cloth_receipt WHERE orderId = $1 AND transaction_id = $2",
-      [orderId, transaction_id]
-    );
+    // const apprentice = Fetchedapprentice.rows[0];
+    // if (!apprentice) {
+    //   return res.status(404).json({
+    //     success: false,
+    //     message: "Unable to find Apprentice in database",
+    //   });
+    // }
 
-    if (existingReceipt.rows.length > 0) {
-      return res.status(400).json({
-        success: false,
-        message: "Receipt already exists for this transaction and order!",
-      });
-    }
+    // let reciept;
+ 
+    // const existingReceipt = await client.query(
+    //   "SELECT id FROM apprentice_reciept WHERE orderId = $1 AND transaction_id = $2",
+    //   [orderId, transaction_id]
+    // );
 
-    reciept = await client.query(
-      `INSERT INTO apprentice_receipt (apprenticeId, orderId, transaction_id, bill, status)
-       VALUES ($1, $2, $3, $4, $5,) RETURNING *`,
-      [apprentice.Id, orderId, transaction_id, bill, "Completed"]
-    );
+    // if (existingReceipt.rows[0]) {
+    //   return res.status(400).json({
+    //     success: false,
+    //     message: "Receipt already exists for this transaction and order!",
+    //   });
+    // }
 
-    return res.status(200).json({
-      success: true,
-      message: "Payment was successfull",
-      data: apprentice.rows[0],
-    });
+    // reciept = await client.query(
+    //   `INSERT INTO apprentice_receipt (apprenticeId, orderId, transaction_id, bill, status)
+    //    VALUES ($1, $2, $3, $4, $5,) RETURNING *`,
+    //   [apprentice.Id, orderId, transaction_id, bill, "Completed"]
+    // );
+
+    // return res.status(200).json({
+    //   success: true,
+    //   message: "Payment was successfull",
+    //   data: apprentice.rows[0],
+    // });
   } catch (error) {
     return res.status(500).json({
       success: false,
