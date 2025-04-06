@@ -89,7 +89,9 @@ CREATE TABLE IF NOT EXISTS apprentice_reciept(
     id SERIAL PRIMARY KEY,
     apprenticeId INT NOT NULL,
     bill NUMERIC(10, 2),
-    orderId TEXT transactionId TEXT status status_enum DEFAULT 'Pending',
+    orderId TEXT,
+     transactionId TEXT,
+      status status_enum DEFAULT 'Pending',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT apprentice_key FOREIGN KEY (apprenticeId) REFERENCES apprentice (id) ON DELETE CASCADE
 );

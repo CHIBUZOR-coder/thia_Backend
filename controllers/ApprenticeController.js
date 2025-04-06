@@ -372,7 +372,7 @@ export const verifyApprenticePyment = async (req, res) => {
       "SELECT * FROM apprentice WHERE email = $1",
       [email]
     );
-console.log("Fetchedapprentice:", Fetchedapprentice);
+    console.log("Fetchedapprentice:", Fetchedapprentice);
     const apprentice = Fetchedapprentice.rows[0];
     console.log("apprentice:", apprentice);
     if (!apprentice) {
@@ -383,8 +383,6 @@ console.log("Fetchedapprentice:", Fetchedapprentice);
     }
 
     let reciept;
-
-    
 
     const existingReceipt = await client.query(
       "SELECT id FROM apprentice_reciept WHERE orderId = $1 AND transaction_id = $2",
@@ -401,7 +399,7 @@ console.log("Fetchedapprentice:", Fetchedapprentice);
     reciept = await client.query(
       `INSERT INTO apprentice_reciept (apprenticeId, orderId, transaction_id, bill, status)
        VALUES ($1, $2, $3, $4, $5) RETURNING *`,
-      [apprentice.Id, orderId, transaction_id, bill, "Completed"]
+      [apprentice.id, orderId, transaction_id, bill, "Completed"]
     );
 
     return res.status(200).json({
