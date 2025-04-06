@@ -105,7 +105,7 @@ const sendVerificationEmail = async (email, message, PaymentLink) => {
       address: process.env.EMAIL_HOST_USER,
     },
     to: email,
-    subject: "Email Verification",
+    subject: "Addmision Confirmation",
     html: `
   <div style="width: 100%; padding:10px 0; max-width: 600px; margin: auto; text-align: center;
   font-family: Arial, sans-serif; border-radius: 10px; overflow: hidden;">

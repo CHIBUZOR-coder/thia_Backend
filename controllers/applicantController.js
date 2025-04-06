@@ -123,7 +123,7 @@ const sendVerificationEmail = async (email, message) => {
       address: process.env.EMAIL_HOST_USER,
     },
     to: email,
-    subject: "Email Verification",
+    subject: "Application Update",
     html: `
       <div style="width: 100%; height:600px; max-width: 600px; margin: auto; text-align: center;
       font-family: Arial, sans-serif; border-radius: 10px; overflow: hidden;">
