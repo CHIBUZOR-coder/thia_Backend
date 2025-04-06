@@ -14,7 +14,9 @@ const app = express();
 import dotenv from "dotenv";
 
 
+
 dotenv.config();
+
 
 const port = process.env.PORT || 5000;
 // console.log(`Type of password: ${typeof process.env.DB_PASSWORD}`);

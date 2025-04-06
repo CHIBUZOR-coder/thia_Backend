@@ -323,11 +323,12 @@ export const initialisePayment = async (req, res) => {
     console.log("Flutterwave Response:", data);
     console.log("Redirect URL:", redirectUrl);
 
+
     return res.status(200).json({
       success: true,
       message: "Payment link generated successfully",
       payment_link: data.data.link, // Use Flutterwave's dynamic link
-      orderId,
+     
     });
   } catch (error) {
     console.error(" Subscription error:", error);
