@@ -407,7 +407,7 @@ export const verifyApprenticePyment = async (req, res) => {
       success: true,
       message: "Payment was successful",
 
-      data: reciept,
+      data: reciept.rows[0],
     });
   } catch (error) {
     return res.status(500).json({
