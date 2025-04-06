@@ -396,8 +396,8 @@ export const verifyApprenticePyment = async (req, res) => {
     }
 
     reciept = await client.query(
-      `INSERT INTO apprentice_receipt (apprenticeId, orderId, transaction_id, bill, status)
-       VALUES ($1, $2, $3, $4, $5) RETURNING *`, 
+      `INSERT INTO apprentice_reciept (apprenticeId, orderId, transaction_id, bill, status)
+       VALUES ($1, $2, $3, $4, $5) RETURNING *`,
       [apprentice.Id, orderId, transaction_id, bill, "Completed"]
     );
 
