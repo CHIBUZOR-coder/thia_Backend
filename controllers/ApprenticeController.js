@@ -241,7 +241,6 @@ export const initialisePayment = async (req, res) => {
       });
     }
 
-    
     if (!bill || isNaN(parseFloat(bill))) {
       return res.status(400).json({
         success: false,
@@ -291,7 +290,7 @@ export const initialisePayment = async (req, res) => {
         },
 
         meta: {
-          userId: apprentice.id,
+          apprentuceId: apprentice.id,
           orderId,
           amount: bill,
           startDate: "January 2025",
@@ -311,24 +310,14 @@ export const initialisePayment = async (req, res) => {
         .json({ success: false, message: "Failed to generate payment link" });
     }
 
-    // if (data.data && data.data.meta && data.data.meta.products) {
-    //   try {
-    //     products = JSON.parse(data.data.meta.products);
-    //     console.log("Parsed Products:", products);
-    //   } catch (error) {
-    //     console.error("Error parsing products JSON:", error);
-    //   }
-    // }
-
     console.log("Flutterwave Response:", data);
     console.log("Redirect URL:", redirectUrl);
 
-    
     return res.status(200).json({
       success: true,
       message: "Payment link generated successfully",
       payment_link: data.data.link, // Use Flutterwave's dynamic link
-      email
+      email,
     });
   } catch (error) {
     console.error(" Subscription error:", error);
@@ -339,7 +328,7 @@ export const initialisePayment = async (req, res) => {
   }
 };
 
-export const verifyPyment = async () => {
+export const verifyPyment = async (req, res) => {
   try {
     const { transaction_id, orderId, email } = req.body;
     console.log("reqBody:", req.body);
@@ -363,61 +352,61 @@ export const verifyPyment = async () => {
 
     const data = await response.json();
 
-    // let bill;
-    // if (data.data && data.data.meta) {
-    //   try {
+    let bill;
+    if (data.data && data.data.meta) {
+      try {
+        bill = data?.data?.charged_amount;
+        // console.log("Parsed Products:", products);
+      } catch (error) {
+        console.error("Error parsing products JSON:", error);
+      }
+    }
+    if (!data.data || data.status !== "success") {
+      return res
+        .status(400)
+        .json({ success: false, message: "Payment failed" });
+    }
+    console.log("verified data:", data);
 
-    //     bill = data?.data?.amount_settled;
-    //     // console.log("Parsed Products:", products);
-    //   } catch (error) {
-    //     console.error("Error parsing products JSON:", error);
-    //   }
-    // }
-    // if (!data.data || data.status !== "success") {
-    //   return res
-    //     .status(400)
-    //     .json({ success: false, message: "Payment failed" });
-    // }
-    console.log("verified data", data);
+    const Fetchedapprentice = await client.query(
+      "SELECT * FROM apprentice WHERE email = $1",
+      [email]
+    );
 
-    // const Fetchedapprentice = await client.query(
-    //   "SELECT * FROM apprentice WHERE email = $1",
-    //   [email]
-    // );
+    const apprentice = Fetchedapprentice.rows[0];
+    if (!apprentice) {
+      return res.status(404).json({
+        success: false,
+        message: "Unable to find Apprentice in database",
+      });
+    }
 
-    // const apprentice = Fetchedapprentice.rows[0];
-    // if (!apprentice) {
-    //   return res.status(404).json({
-    //     success: false,
-    //     message: "Unable to find Apprentice in database",
-    //   });
-    // }
+    let reciept;
 
-    // let reciept;
- 
-    // const existingReceipt = await client.query(
-    //   "SELECT id FROM apprentice_reciept WHERE orderId = $1 AND transaction_id = $2",
-    //   [orderId, transaction_id]
-    // );
+    const existingReceipt = await client.query(
+      "SELECT id FROM apprentice_reciept WHERE orderId = $1 AND transaction_id = $2",
+      [orderId, transaction_id]
+    );
 
-    // if (existingReceipt.rows[0]) {
-    //   return res.status(400).json({
-    //     success: false,
-    //     message: "Receipt already exists for this transaction and order!",
-    //   });
-    // }
+    if (existingReceipt.rows[0]) {
+      return res.status(400).json({
+        success: false,
+        message: "Receipt already exists for this transaction and order!",
+      });
+    }
 
-    // reciept = await client.query(
-    //   `INSERT INTO apprentice_receipt (apprenticeId, orderId, transaction_id, bill, status)
-    //    VALUES ($1, $2, $3, $4, $5,) RETURNING *`,
-    //   [apprentice.Id, orderId, transaction_id, bill, "Completed"]
-    // );
+    reciept = await client.query(
+      `INSERT INTO apprentice_receipt (apprenticeId, orderId, transaction_id, bill, status)
+       VALUES ($1, $2, $3, $4, $5,) RETURNING *`
+      [apprentice.Id, orderId, transaction_id, bill, "Completed"]
+    );
 
-    // return res.status(200).json({
-    //   success: true,
-    //   message: "Payment was successfull",
-    //   data: apprentice.rows[0],
-    // });
+    return res.status(200).json({
+      success: true,
+      message: "Payment was successful",
+      
+      data: reciept,
+    });
   } catch (error) {
     return res.status(500).json({
       success: false,

@@ -522,3 +522,74 @@ Flutterwave Response: {
   }
 }
 Redirect URL: http://localhost:5173/thankyou?orderId=6d00fa06-bc92-4b34-b9aa-f20acef98b70
+
+
+
+
+
+
+
+
+
+
+
+user:
+[Object: null prototype] {}
+[Object: null prototype] {}
+[Object: null prototype] {}
+[Object: null prototype] {}
+reqBody: {
+  transaction_id: '8583022',
+  orderId: '02299d0c-8c7b-48af-a341-c83687322b9c',
+  email: 'chibuzoremkalam@gmail.com'
+}
+verified data {
+  status: 'success',
+  message: 'Transaction fetched successfully',
+  data: {
+    id: 8583022,
+    tx_ref: '02299d0c-8c7b-48af-a341-c83687322b9c',
+    flw_ref: 'FLW-MOCK-56ff96c4a15292bdfb54ac4574cc51c0',
+    device_fingerprint: 'N/A',
+    amount: 20000,
+    currency: 'NGN',
+    charged_amount: 20000,
+    app_fee: 280,
+    merchant_fee: 0,
+    processor_response: 'Approved. Successful',
+    auth_model: 'VBVSECURECODE',
+    ip: '54.75.161.64',
+    narration: 'CARD Transaction ',
+    status: 'successful',
+    payment_type: 'card',
+    created_at: '2025-04-06T21:48:55.000Z',
+    account_id: 2587138,
+    card: {
+      first_6digits: '553188',
+      last_4digits: '2950',
+      issuer: ' CREDIT',
+      country: 'NIGERIA NG',
+      type: 'MASTERCARD',
+      token: 'flw-t1nf-2ef0c0db75faa1c0320979311c1d68ee-m03k',
+      expiry: '09/32'
+    },
+    meta: {
+      __CheckoutInitAddress: 'https://checkout-v2.dev-flutterwave.com/v3/hosted/pay',
+      userId: '6',
+      orderId: '02299d0c-8c7b-48af-a341-c83687322b9c',
+      amount: '20000',
+      startDate: 'January 2025',
+      endDate: 'December 2025',
+      course: 'Fashion Design'
+    },
+    amount_settled: 19649,
+    customer: {
+      id: 2703183,
+      name: 'Zoe Emekalam',
+      phone_number: '09074639302',
+      email: 'chibuzoremkalam@gmail.com',
+      created_at: '2025-04-06T20:14:21.000Z'
+    }
+  }
+}
+user:
