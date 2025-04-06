@@ -8,6 +8,7 @@ import {
   getApprentice,
   deleteApprentice,
   initialisePayment,
+  verifyApprenticePyment,
 } from "../controllers/ApprenticeController.js";
 
 apprenticeRouter.post(
@@ -23,5 +24,6 @@ apprenticeRouter.delete(
 );
 
 apprenticeRouter.post("/apprenticePaynent", initialisePayment);
+apprenticeRouter.post("/verifyApprenticePyment", verifyApprenticePyment);
 
 export { apprenticeRouter };

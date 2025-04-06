@@ -328,7 +328,7 @@ export const initialisePayment = async (req, res) => {
   }
 };
 
-export const verifyPyment = async (req, res) => {
+export const verifyApprenticePyment = async (req, res) => {
   try {
     const { transaction_id, orderId, email } = req.body;
     console.log("reqBody:", req.body);
