@@ -372,8 +372,9 @@ export const verifyApprenticePyment = async (req, res) => {
       "SELECT * FROM apprentice WHERE email = $1",
       [email]
     );
-
+console.log("Fetchedapprentice:", Fetchedapprentice);
     const apprentice = Fetchedapprentice.rows[0];
+    console.log("apprentice:", apprentice);
     if (!apprentice) {
       return res.status(404).json({
         success: false,
@@ -382,6 +383,8 @@ export const verifyApprenticePyment = async (req, res) => {
     }
 
     let reciept;
+
+    
 
     const existingReceipt = await client.query(
       "SELECT id FROM apprentice_reciept WHERE orderId = $1 AND transaction_id = $2",
@@ -404,7 +407,7 @@ export const verifyApprenticePyment = async (req, res) => {
     return res.status(200).json({
       success: true,
       message: "Payment was successful",
-      
+
       data: reciept,
     });
   } catch (error) {
