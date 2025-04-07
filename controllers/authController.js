@@ -410,8 +410,7 @@ export const AccountRecovery = async (req, res) => {
 
     // Generate a unique reset token
     // const resetToken = crypto.randomBytes(32).toString("hex");
-    const resetToken = ResetPasswordToken(user);
-
+    const resetToken = ResetPasswordToken(user.rows[0]);
 
     // await prisma.user.update({
     //   where: { email },
