@@ -46,7 +46,7 @@ if (!SECRET_KEY) {
 
 function generateToken(user) {
   try {
-    const { id, role, email, firstname, lastname, address, phone } = user;
+    const { email, firstname, lastname } = user;
 
     // Validate required fields
     if (
@@ -111,7 +111,7 @@ function ResetPasswordToken(user) {
 
     // Generate and return the token
 
-      return jwt.sign(payload, SECRET_KEY, options);
+    return jwt.sign(payload, SECRET_KEY, options);
   } catch (error) {
     console.error("Error generating token:", error.message);
     throw error; // Rethrow the error to ensure the calling code handles it
