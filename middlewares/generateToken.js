@@ -24,7 +24,7 @@ if (!SECRET_KEY) {
 //     const payload = {
 //       id: userId,
 //       role: userRole,
-
+      
 //     };
 
 //     //checking for userId and userRole
@@ -46,16 +46,22 @@ if (!SECRET_KEY) {
 
 function generateToken(user) {
   try {
-    const { email } = user;
+    const { id, role, email, firstname, lastname , address, phone} = user;
 
     // Validate required fields
-    if (!email) {
-      throw new Error(" email is required ");
+    if (!id || !role || !email || !firstname || !lastname || !address || !phone) {
+      throw new Error("All user fields (id, role, email, firstname, lastname) are required to generate a token");
     }
 
     // Payload data
     const payload = {
+      id,
+      role,
       email,
+      firstname,
+      lastname,
+      address,
+      phone
     };
 
     // Token options
@@ -71,27 +77,30 @@ function generateToken(user) {
   }
 }
 
+
+
 function ResetPasswordToken(user) {
   try {
-    const { email } = user;
+    const { email} = user;
+    console.log("user", user);
 
     if (!email) {
       console.log("emal is required");
-      return;
     }
 
     // Payload data
     const payload = {
       email,
+ 
     };
 
     // Token options
     const options = {
-      expiresIn: "1h", // Token validity duration (e.g., 2 hours)h
+      expiresIn: "15m", // Token validity duration (e.g., 2 hours)h
     };
 
     // Generate and return the token
-    return jwt.sign(options, SECRET_KEY, payload);
+    return jwt.sign(payload, SECRET_KEY, options);
   } catch (error) {
     console.error("Error generating token:", error.message);
     throw error; // Rethrow the error to ensure the calling code handles it
