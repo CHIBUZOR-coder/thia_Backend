@@ -471,6 +471,7 @@ export const resetPassword = async (req, res) => {
   try {
     // Verify the JWT token
     const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
+    const email = decoded.email;
     if (!decoded) {
       return res
         .status(400)
@@ -481,6 +482,13 @@ export const resetPassword = async (req, res) => {
     const user = await client.query("SELECT * FROM userr WHERE email = $1", [
       email,
     ]);
+
+    if (!user.rows[0]) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found!",
+      });
+    }
     console.log("email:", email);
 
     // console.log("user:", user);
@@ -502,30 +510,15 @@ export const resetPassword = async (req, res) => {
         .json({ success: false, message: "Passwords does not match!" });
     }
 
-    if (!user) {
-      return res.status(400).json({
-        success: false,
-        message: "Invalid or expired reset token!",
-      });
-    }
-
     // Hash new password
     const salt = await bcrypt.genSalt(11);
     const hashedPassword = await bcrypt.hash(newPassword, salt);
-
-    // Update user's password and clear the reset token
-    // const updatedUser = await prisma.user.update({
-    //   where: { id: user.id },
-    //   data: {
-    //     password: hashedPassword,
-    //     resetToken: null,
-    //   },
-    // });
 
     const updatedUser = await client.query(
       "ALTER TABLE userr SET COLUMN password = $1",
       [hashedPassword]
     );
+
     res.status(200).json({
       success: true,
       message: "Password has been reset successfully!",
