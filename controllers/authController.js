@@ -472,6 +472,9 @@ export const resetPassword = async (req, res) => {
     // Verify the JWT token
     const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
     const email = decoded.email;
+
+    console.log("email", email);
+
     if (!decoded) {
       return res
         .status(400)
