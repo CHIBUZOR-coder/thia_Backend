@@ -481,6 +481,8 @@ export const resetPassword = async (req, res) => {
         .json({ success: false, message: "Invalid or expired reset token!" });
     }
 
+    console.log("decoded", decoded);
+
     // Find user by reset token and check if it's expired
     const user = await client.query("SELECT * FROM userr WHERE email = $1", [
       email,
