@@ -114,7 +114,6 @@ export const getCart = async (req, res) => {
       [user.id]
     );
 
-    
     //user.id
     // Check if cart exists
     if (cart.rowCount === 0) {
@@ -270,3 +269,4 @@ export const DeleteCartItem = async (req, res) => {
     return res.status(500).json({ success: false, message: error.message });
   }
 };
+

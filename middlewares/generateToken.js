@@ -78,7 +78,38 @@ function generateToken(user) {
 }
 
 
+
+function ResetPasswordToken(user) {
+  try {
+    const { email, name } = user;
+    console.log("user", user);
+
+    if (!email) {
+      console.log("emal is required");
+    } else if (!name) {
+      console.log("name is required");
+    }
+
+    // Payload data
+    const payload = {
+      email,
+      name,
+    };
+
+    // Token options
+    const options = {
+      expiresIn: "15m", // Token validity duration (e.g., 2 hours)h
+    };
+
+    // Generate and return the token
+    return jwt.sign(payload, SECRET_KEY, options);
+  } catch (error) {
+    console.error("Error generating token:", error.message);
+    throw error; // Rethrow the error to ensure the calling code handles it
+  }
+}
+
 // // Example usage:
 // const token = generateToken(123, "admin");
 // console.log("Generated Token:", token);
-export { generateToken };
+export { generateToken, ResetPasswordToken };

@@ -1,6 +1,9 @@
 import bcrypt, { compare } from "bcrypt";
 import client from "../db.js";
-import { generateToken } from "../middlewares/generateToken.js";
+import {
+  generateToken,
+  ResetPasswordToken,
+} from "../middlewares/generateToken.js";
 //create/register new user
 import dotenv from "dotenv";
 import { v4 as uuidv4 } from "uuid"; // <-- Add semicolon here
@@ -342,20 +345,6 @@ export const loginUser = async (req, res) => {
   }
 };
 
-
-
-
-
-export const updateProfile = (req, res)=>{
-  const {} = req.body
-try {
-  
-
-
-} catch (error) {
-  
-}
-}
 export const deleteAccount = async (req, res) => {
   const { email, password } = req.body;
 
@@ -396,6 +385,100 @@ export const deleteAccount = async (req, res) => {
       success: false,
       message:
         "An error occurred while deleting the account. Please try again later.",
+    });
+  }
+};
+
+exports.accountRecovery = async (req, res) => {
+  const { email } = req.body;
+  try {
+    const user = await client.query("SELECT * FROM userr WHERE email =  $1");
+    if (!user.rows[0]) {
+      return res.status(404).json({
+        success: false,
+        message: "There is no user with the provided email!",
+      });
+    }
+
+    // Generate a unique reset token
+    // const resetToken = crypto.randomBytes(32).toString("hex");
+    const resetToken = ResetPasswordToken(user);
+
+    // await prisma.user.update({
+    //   where: { email },
+    //   data: {
+    //     resetToken,
+    //   },
+    // });
+
+    const resetLink = `${process.env.FRONTEND_URL}/resetPassword/${resetToken}`;
+    const mailOptions = {
+      from: process.env.EMAIL_HOST_USER,
+      to: email,
+      subject: "Password Reset Request",
+      html: `
+ <div style="
+    width: 100%;
+    height:600px;
+   
+    max-width: 600px;
+    margin: auto;
+    text-align: center;
+    font-family: Arial, sans-serif;
+    border-radius: 10px;
+    overflow: hidden;
+">
+
+    <!-- Background Image Section -->
+    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="height: 300px;">
+      <tr>
+        <td style="
+          background: url('https://res.cloudinary.com/dtjgj2odu/image/upload/v1739154208/logo_c6zxpk.png') no-repeat center center;
+          background-size: cover;
+       
+        ">
+
+
+     <br>
+       <br>
+         <br>
+           <br>
+
+        </td>
+      </tr>
+    </table>
+
+    <!-- Main Content -->
+    <div style="padding: 20px;  color:  #0B0F29;">
+      <p style="font-size: 16px;">
+        Click the button below to reset your password. This link is valid for 3 minuutes.
+      </p>
+     <a href="${resetLink}" 
+    style="display: inline-block; padding: 12px 24px; background: #0B0F29; 
+    border: 5px solid #0B0F29; color: #F20000; text-decoration: none; 
+    font-weight: bold; border-radius: 5px;" 
+    onmouseover="this.style.background='#FFF'; this.style.color='#0B0F29';"
+    onmouseout="this.style.background='#0B0F29'; this.style.color='#F20000';">
+    Reset Password
+</a>
+
+      <p style="margin-top: 20px; font-size: 14px; color:  #0B0F29;">
+        If you did not request this, please ignore this email.
+      </p>
+    </div>
+  </div>
+`,
+    };
+    await transporter.sendMail(mailOptions);
+    return res.status(200).json({
+      success: true,
+      message: "Password reset link sent to your email!",
+    });
+  } catch (error) {
+    console.error("Password reset error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Something went wrong. Please try again later.",
     });
   }
 };
