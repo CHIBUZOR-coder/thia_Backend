@@ -463,3 +463,79 @@ export const AccountRecovery = async (req, res) => {
     });
   }
 };
+
+export const resetPassword = async (req, res) => {
+  const { token } = req.params;
+  const { newPassword, confirmPassword } = req.body;
+
+  try {
+    // Verify the JWT token
+    const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
+    if (!decoded) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid or expired reset token!" });
+    }
+
+    // Find user by reset token and check if it's expired
+    const user = await client.query("SELECT * FROM userr WHERE email = $1", [
+      email,
+    ]);
+    console.log("email:", email);
+
+    // console.log("user:", user);
+
+    const passwordRegex = /^[A-Z](?=.*[\W_])/;
+    // ^[A-Z]       -> Ensures the password starts with a capital letter
+    // (?=.*[\W_])  -> Ensures at least one special character (non-alphanumeric)
+
+    if (!passwordRegex.test(newPassword)) {
+      return res.status(400).json({
+        success: false,
+        message:
+          "Password must start with a capital letter and contain at least one special character.",
+      });
+    }
+    if (newPassword !== confirmPassword) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Passwords does not match!" });
+    }
+
+    if (!user) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid or expired reset token!",
+      });
+    }
+
+    // Hash new password
+    const salt = await bcrypt.genSalt(11);
+    const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+    // Update user's password and clear the reset token
+    // const updatedUser = await prisma.user.update({
+    //   where: { id: user.id },
+    //   data: {
+    //     password: hashedPassword,
+    //     resetToken: null,
+    //   },
+    // });
+
+    const updatedUser = await client.query(
+      "ALTER TABLE userr SET COLUMN password = $1",
+      [hashedPassword]
+    );
+    res.status(200).json({
+      success: true,
+      message: "Password has been reset successfully!",
+      data: updatedUser,
+    });
+  } catch (error) {
+    console.error("Reset password error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Something went wrong. Please try again.",
+    });
+  }
+};

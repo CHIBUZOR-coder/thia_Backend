@@ -4,6 +4,7 @@ import {
   deleteAccount,
   verifyEmail,
   AccountRecovery,
+  resetPassword,
 } from "../controllers/authController.js";
 import { verifyToken } from "../middlewares/authentication.js"; // Import the verifyToken middleware
 import express from "express";
@@ -16,6 +17,7 @@ authRouter.post("/api/loginUser", loginUser);
 authRouter.delete("/api/deleteAccount", deleteAccount);
 authRouter.post("/verifyEmail", verifyEmail);
 authRouter.post("/accountRecovery", AccountRecovery);
+authRouter.post("/resetPassword/:token", resetPassword);
 
 authRouter.get("/api/protectedRoute", verifyToken, (req, res) => {
   let userInfo;
