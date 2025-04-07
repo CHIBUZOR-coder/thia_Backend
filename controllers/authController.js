@@ -392,9 +392,10 @@ export const deleteAccount = async (req, res) => {
 export const AccountRecovery = async (req, res) => {
   const { email } = req.body;
   try {
-  const user = await client.query("SELECT * FROM userr WHERE email = $1", [email]);
-console.log("email:", email);
-
+    const user = await client.query("SELECT * FROM userr WHERE email = $1", [
+      email,
+    ]);
+    console.log("email:", email);
 
     // console.log("user:", user);
 
@@ -422,54 +423,29 @@ console.log("email:", email);
       to: email,
       subject: "Password Reset Request",
       html: `
- <div style="
-    width: 100%;
-    height:600px;
-   
-    max-width: 600px;
-    margin: auto;
-    text-align: center;
-    font-family: Arial, sans-serif;
-    border-radius: 10px;
-    overflow: hidden;
-">
-
-    <!-- Background Image Section -->
+  <div style="width: 100%; padding:10px 0; max-width: 600px; margin: auto; text-align: center;
+  font-family: Arial, sans-serif; border-radius: 10px; overflow: hidden;">
     <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="height: 300px;">
       <tr>
-        <td style="
-          background: url('https://res.cloudinary.com/dtjgj2odu/image/upload/v1739154208/logo_c6zxpk.png') no-repeat center center;
-          background-size: cover;
-       
-        ">
-
-
-     <br>
-       <br>
-         <br>
-           <br>
-
+      <td style="text-align: center; padding: 20px;">
+          <img src="https://res.cloudinary.com/dtjgj2odu/image/upload/v1734469383/ThiaLogo_nop3yd.png" 
+          alt="Thia's Apparel Logo" width="120" height="120" 
+          style="max-width: 100%; display: block; margin: auto; border-radius: 50%;">
         </td>
       </tr>
     </table>
+    <div style="padding: 20px; color:  #0B0F29;">
+     
+      <p  style="display: inline-block; padding: 12px 24px; background: #F1ECEC; 
+      border: 5px solid #0B0F29; color: #656363; text-decoration: none; font-weight: bold; border-radius: 5px;">
+      Click the below link to reset your password.</p>
 
-    <!-- Main Content -->
-    <div style="padding: 20px;  color:  #0B0F29;">
-      <p style="font-size: 16px;">
-        Click the button below to reset your password. This link is valid for 3 minuutes.
-      </p>
-     <a href="${resetLink}" 
-    style="display: inline-block; padding: 12px 24px; background: #0B0F29; 
-    border: 5px solid #0B0F29; color: #F20000; text-decoration: none; 
-    font-weight: bold; border-radius: 5px;" 
-    onmouseover="this.style.background='#FFF'; this.style.color='#0B0F29';"
-    onmouseout="this.style.background='#0B0F29'; this.style.color='#F20000';">
-    Reset Password
-</a>
-
-      <p style="margin-top: 20px; font-size: 14px; color:  #0B0F29;">
-        If you did not request this, please ignore this email.
-      </p>
+      <a href="${resetLink}" style="display: inline-block; padding: 12px 24px; background: #0B0F29; 
+      border: 5px solid #0B0F29; color: #F20000; text-decoration: none; font-weight: bold; border-radius: 5px;"
+      onmouseover="this.style.background='#FFF'; this.style.color='#0B0F29';"
+      onmouseout="this.style.background='#0B0F29'; this.style.color='#F20000';">Start Payment</a>
+      
+      <p style="font-size: 16px;">If you did not request this, please ignore this email.</p>
     </div>
   </div>
 `,
