@@ -406,7 +406,7 @@ export const AccountRecovery = async (req, res) => {
       });
     }
 
-    console.log("user:", user);
+    // console.log("user:", user);
 
     // Generate a unique reset token
     // const resetToken = crypto.randomBytes(32).toString("hex");
