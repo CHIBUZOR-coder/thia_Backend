@@ -471,37 +471,30 @@ export const resetPassword = async (req, res) => {
   const { newPassword, confirmPassword } = req.body;
 
   try {
-    // Verify the JWT token
-    const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
-    const email = decoded.email;
-    console.log("decoded", decoded);
-
-    console.log("emailA", email);
-
-    if (!decoded) {
+    let decoded;
+    try {
+      decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
+    } catch (err) {
       return res
         .status(400)
         .json({ success: false, message: "Invalid or expired reset token!" });
     }
 
-    // Find user by reset token and check if it's expired
+    const email = decoded.email;
+    console.log("Decoded email:", email);
+
     const user = await client.query("SELECT * FROM userr WHERE email = $1", [
       email,
     ]);
 
-    if (!user.rows[0]) {
+    if (!user.rows.length) {
       return res.status(404).json({
         success: false,
         message: "User not found!",
       });
     }
-    console.log("email:", email);
 
-    // console.log("user:", user);
-
-    const passwordRegex = /^[A-Z](?=.*[\W_])/;
-    // ^[A-Z]       -> Ensures the password starts with a capital letter
-    // (?=.*[\W_])  -> Ensures at least one special character (non-alphanumeric)
+    const passwordRegex = /^[A-Z].*[\W_]/;
 
     if (!passwordRegex.test(newPassword)) {
       return res.status(400).json({
@@ -510,25 +503,25 @@ export const resetPassword = async (req, res) => {
           "Password must start with a capital letter and contain at least one special character.",
       });
     }
+
     if (newPassword !== confirmPassword) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Passwords does not match!" });
+      return res.status(400).json({
+        success: false,
+        message: "Passwords do not match!",
+      });
     }
 
-    // Hash new password
     const salt = await bcrypt.genSalt(11);
     const hashedPassword = await bcrypt.hash(newPassword, salt);
 
-    const updatedUser = await client.query(
-      "ALTER TABLE userr SET COLUMN password = $1",
-      [hashedPassword]
-    );
+    await client.query("UPDATE userr SET password = $1 WHERE email = $2", [
+      hashedPassword,
+      email,
+    ]);
 
     res.status(200).json({
       success: true,
       message: "Password has been reset successfully!",
-      data: updatedUser,
     });
   } catch (error) {
     console.error("Reset password error:", error);
