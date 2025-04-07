@@ -93,8 +93,9 @@ function ResetPasswordToken(user) {
 
     if (!email) {
       console.log("emal is required");
+      return
     } 
-    
+
     console.log("emailll", email);
     // Payload data
     const payload = {
@@ -107,7 +108,7 @@ function ResetPasswordToken(user) {
     };
 
     // Generate and return the token
-    return jwt.sign(payload, SECRET_KEY, options);
+    return jwt.sign(payload, SECRET_KEY);
   } catch (error) {
     console.error("Error generating token:", error.message);
     throw error; // Rethrow the error to ensure the calling code handles it
