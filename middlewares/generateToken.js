@@ -46,32 +46,16 @@ if (!SECRET_KEY) {
 
 function generateToken(user) {
   try {
-    const { id, role, email, firstname, lastname, address, phone } = user;
+    const { email } = user;
 
     // Validate required fields
-    if (
-      !id ||
-      !role ||
-      !email ||
-      !firstname ||
-      !lastname ||
-      !address ||
-      !phone
-    ) {
-      throw new Error(
-        "All user fields (id, role, email, firstname, lastname) are required to generate a token"
-      );
+    if (!email) {
+      throw new Error(" email is required ");
     }
 
     // Payload data
     const payload = {
-      id,
-      role,
       email,
-      firstname,
-      lastname,
-      address,
-      phone,
     };
 
     // Token options
