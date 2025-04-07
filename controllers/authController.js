@@ -395,6 +395,9 @@ export const AccountRecovery = async (req, res) => {
     const user = await client.query("SELECT * FROM userr WHERE email =  $1", [
       email,
     ]);
+
+    console.log("user:", user);
+
     if (!user.rows[0]) {
       return res.status(404).json({
         success: false,
