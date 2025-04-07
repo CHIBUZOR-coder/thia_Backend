@@ -389,7 +389,7 @@ export const deleteAccount = async (req, res) => {
   }
 };
 
-export const accountRecovery = async (req, res) => {
+export const AccountRecovery = async (req, res) => {
   const { email } = req.body;
   try {
     const user = await client.query("SELECT * FROM userr WHERE email =  $1");
