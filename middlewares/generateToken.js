@@ -24,7 +24,7 @@ if (!SECRET_KEY) {
 //     const payload = {
 //       id: userId,
 //       role: userRole,
-      
+
 //     };
 
 //     //checking for userId and userRole
@@ -46,11 +46,21 @@ if (!SECRET_KEY) {
 
 function generateToken(user) {
   try {
-    const { id, role, email, firstname, lastname , address, phone} = user;
+    const { id, role, email, firstname, lastname, address, phone } = user;
 
     // Validate required fields
-    if (!id || !role || !email || !firstname || !lastname || !address || !phone) {
-      throw new Error("All user fields (id, role, email, firstname, lastname) are required to generate a token");
+    if (
+      !id ||
+      !role ||
+      !email ||
+      !firstname ||
+      !lastname ||
+      !address ||
+      !phone
+    ) {
+      throw new Error(
+        "All user fields (id, role, email, firstname, lastname) are required to generate a token"
+      );
     }
 
     // Payload data
@@ -61,7 +71,7 @@ function generateToken(user) {
       firstname,
       lastname,
       address,
-      phone
+      phone,
     };
 
     // Token options
@@ -76,8 +86,6 @@ function generateToken(user) {
     throw error; // Rethrow the error to ensure the calling code handles it
   }
 }
-
-
 
 function ResetPasswordToken(user) {
   try {
@@ -102,7 +110,8 @@ function ResetPasswordToken(user) {
     };
 
     // Generate and return the token
-    return jwt.sign(payload, SECRET_KEY, options);
+
+    return jwt.sign(payload, SECRET_KEY, { expiresIn: "1h" });
   } catch (error) {
     console.error("Error generating token:", error.message);
     throw error; // Rethrow the error to ensure the calling code handles it
