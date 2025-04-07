@@ -406,6 +406,8 @@ export const AccountRecovery = async (req, res) => {
       });
     }
 
+    console.log("user:", user);
+
     // Generate a unique reset token
     // const resetToken = crypto.randomBytes(32).toString("hex");
     const resetToken = ResetPasswordToken(user);
@@ -472,7 +474,7 @@ export const resetPassword = async (req, res) => {
     // Verify the JWT token
     const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
     const email = decoded.email;
-        console.log("decoded", decoded);
+    console.log("decoded", decoded);
 
     console.log("emailA", email);
 
@@ -481,8 +483,6 @@ export const resetPassword = async (req, res) => {
         .status(400)
         .json({ success: false, message: "Invalid or expired reset token!" });
     }
-
-
 
     // Find user by reset token and check if it's expired
     const user = await client.query("SELECT * FROM userr WHERE email = $1", [
