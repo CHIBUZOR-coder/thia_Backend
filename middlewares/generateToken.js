@@ -89,8 +89,7 @@ function generateToken(user) {
 
 function ResetPasswordToken(user) {
   try {
-    const { email, firstname, lastname } = user;
-    console.log("user", user);
+    const { email } = user;
 
     if (!email) {
       console.log("emal is required");
@@ -99,12 +98,10 @@ function ResetPasswordToken(user) {
     } else if (!lastname) {
       console.log("name is required");
     }
-
+    console.log("user", user);
     // Payload data
     const payload = {
       email,
-      firstname,
-      lastname,
     };
 
     // Token options
