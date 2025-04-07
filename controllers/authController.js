@@ -392,7 +392,9 @@ export const deleteAccount = async (req, res) => {
 export const AccountRecovery = async (req, res) => {
   const { email } = req.body;
   try {
-    const user = await client.query("SELECT * FROM userr WHERE email =  $1");
+    const user = await client.query("SELECT * FROM userr WHERE email =  $1", [
+      email,
+    ]);
     if (!user.rows[0]) {
       return res.status(404).json({
         success: false,
