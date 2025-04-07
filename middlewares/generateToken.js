@@ -46,7 +46,7 @@ if (!SECRET_KEY) {
 
 function generateToken(user) {
   try {
-    const { email, firstname, lastname } = user;
+    const { id, role, email, firstname, lastname, address, phone } = user;
 
     // Validate required fields
     if (
@@ -89,19 +89,22 @@ function generateToken(user) {
 
 function ResetPasswordToken(user) {
   try {
-    const { email, name } = user;
+    const { email, firstname, lastname } = user;
     console.log("user", user);
 
     if (!email) {
       console.log("emal is required");
-    } else if (!name) {
+    } else if (!firstname) {
+      console.log("name is required");
+    } else if (!lastname) {
       console.log("name is required");
     }
 
     // Payload data
     const payload = {
       email,
-      name,
+      firstname,
+      lastname,
     };
 
     // Token options
@@ -110,7 +113,6 @@ function ResetPasswordToken(user) {
     };
 
     // Generate and return the token
-
     return jwt.sign(payload, SECRET_KEY, options);
   } catch (error) {
     console.error("Error generating token:", error.message);
