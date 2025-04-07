@@ -93,11 +93,8 @@ function ResetPasswordToken(user) {
 
     if (!email) {
       console.log("emal is required");
-    } else if (!firstname) {
-      console.log("name is required");
-    } else if (!lastname) {
-      console.log("name is required");
-    }
+    } 
+    
     console.log("emailll", email);
     // Payload data
     const payload = {
