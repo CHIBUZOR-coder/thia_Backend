@@ -474,7 +474,7 @@ export const resetPassword = async (req, res) => {
     const email = decoded.email;
         console.log("decoded", decoded);
 
-    console.log("email", email);
+    console.log("emailA", email);
 
     if (!decoded) {
       return res
