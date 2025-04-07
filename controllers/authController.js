@@ -396,7 +396,7 @@ export const AccountRecovery = async (req, res) => {
 console.log("email:", email);
 
 
-    console.log("user:", user);
+    // console.log("user:", user);
 
     if (!user.rows[0]) {
       return res.status(404).json({
