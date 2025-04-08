@@ -311,6 +311,7 @@ export const loginUser = async (req, res) => {
       lastname: user.lastname,
       address: user.address || "No Address Provided",
       phone: user.phone || "No Phone Provided",
+      image: user.image,
     });
 
     if (!token)
@@ -624,7 +625,6 @@ export const updateProfile = async (req, res) => {
     if (newEmail) {
       updateData.email = newEmail; // Correctly assign new email
     }
-
 
     //Adress
     if (address) {

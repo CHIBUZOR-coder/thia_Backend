@@ -46,7 +46,7 @@ if (!SECRET_KEY) {
 
 function generateToken(user) {
   try {
-    const { id, role, email, firstname, lastname , address, phone} = user;
+    const { id, role, email, firstname, lastname , address, phone, image} = user;
 
     // Validate required fields
     if (!id || !role || !email || !firstname || !lastname || !address || !phone) {
@@ -61,7 +61,8 @@ function generateToken(user) {
       firstname,
       lastname,
       address,
-      phone
+      phone,
+      image
     };
 
     // Token options
