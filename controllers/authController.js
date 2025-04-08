@@ -596,7 +596,7 @@ export const updateProfile = async (req, res) => {
     let updateData = { firstname, lastname }; // Always initialize updateData
 
     if (req.file) {
-      const publicId = getPublicIdFromUrl(user[0].image);
+      const publicId = getPublicIdFromUrl(user.rows[0].image);
       if (!publicId) {
         return res.status(400).json({
           success: false,
