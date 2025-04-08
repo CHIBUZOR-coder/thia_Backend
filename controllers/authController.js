@@ -32,6 +32,8 @@ export const registerUser = async (req, res) => {
       confirmPassword,
     } = req.body;
 
+    const normalizedEmail = email.toLowerCase();
+
     // Check if all required fields are provided
     if (
       !email ||
@@ -48,6 +50,7 @@ export const registerUser = async (req, res) => {
       });
     }
 
+    let ApprenticeRole = "Apprentice";
     let imageUrl;
     if (!req.file) {
       return res.status(400).json({ message: "No file provided" });
@@ -56,7 +59,12 @@ export const registerUser = async (req, res) => {
     if (req.file) {
       console.log("Starting image upload...");
       // console.log("File buffer:", req.file.buffer);
-
+      const allowedMimeTypes = ["image/jpeg", "image/png", "image/webp"];
+      if (!allowedMimeTypes.includes(req.file.mimetype)) {
+        return res
+          .status(400)
+          .json({ success: false, message: "Invalid image format" });
+      }
       try {
         // Use async/await to handle the image upload process
         imageUrl = await uploadImageToCloudinary(req.file.buffer);
@@ -113,23 +121,49 @@ export const registerUser = async (req, res) => {
       expiresIn: "1h",
     });
 
-    //create new user
-    const newUser = await client.query(
-      "INSERT INTO userr  ( email, firstName, lastName, phone, address,  password,  address2, city, postal_code, country, image ) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING *",
-      [
-        email,
-        firstName,
-        lastName,
-        phone,
-        address,
-        hashedPassword,
-        address2,
-        city,
-        postal_code,
-        country,
-        imageUrl,
-      ]
+    const isApprentice = await client.query(
+      "SELECT * FROM apprentice WHERE email = $1",
+      [email]
     );
+    let newUser;
+    if (isApprentice.rows[0]) {
+      //create new user
+      newUser = await client.query(
+        "INSERT INTO userr  ( email, firstName, lastName, phone, address,  password,  address2, city, postal_code, country, image, role ) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING *",
+        [
+          email,
+          firstName,
+          lastName,
+          phone,
+          address,
+          hashedPassword,
+          address2,
+          city,
+          postal_code,
+          country,
+          imageUrl,
+          ApprenticeRole,
+        ]
+      );
+    } else {
+      //create new user
+      newUser = await client.query(
+        "INSERT INTO userr  ( email, firstName, lastName, phone, address,  password,  address2, city, postal_code, country, image ) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING *",
+        [
+          email,
+          firstName,
+          lastName,
+          phone,
+          address,
+          hashedPassword,
+          address2,
+          city,
+          postal_code,
+          country,
+          imageUrl,
+        ]
+      );
+    }
 
     const verificationLink = `http://localhost:5173/verifyEmail?token=${verifyEmailToken}`;
 

@@ -1,5 +1,5 @@
 CREATE DATABASE thiadataa;
-CREATE TYPE role_enum AS ENUM ('ADMIN', 'USER');
+CREATE TYPE role_enum AS ENUM ('ADMIN', 'USER', 'Apprentice');
 CREATE TYPE status_enum AS ENUM ('Completed', 'Pending');
 CREATE TYPE payment_enum AS ENUM ('Paid', 'Pending') CREATE TABLE IF NOT EXISTS cloth (
     id SERIAL PRIMARY KEY,
