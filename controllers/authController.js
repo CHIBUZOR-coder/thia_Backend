@@ -669,7 +669,7 @@ export const updateProfile = async (req, res) => {
     return res.status(200).json({
       success: true,
       message: "Profile Updated Successfully",
-      data: updatedEmail.rows[0],
+      data: updateData,
     });
   } catch (error) {
     console.log("error:", error.message);
