@@ -582,7 +582,7 @@ export const updateProfile = async (req, res) => {
         .json({ success: false, message: "User does not exist" });
     }
 
-    const validatePassword = await bcrypt.compare(password, user.password);
+    const validatePassword = await bcrypt.compare(password, user.rows[0].password);
     if (!validatePassword) {
       return res.status(400).json({
         success: false,
