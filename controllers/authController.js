@@ -166,8 +166,8 @@ export const registerUser = async (req, res) => {
     }
 
     const verificationLink = `http://localhost:5173/verifyEmail?token=${verifyEmailToken}`;
-
-    await sendVerificationEmail(email, verificationLink);
+ const message = "Click the link below to verify your account";
+    await sendVerificationEmail(email, verificationLink, message);
 
     const userData = newUser.rows[0];
     delete userData.password; // Remove the password from the response
@@ -288,8 +288,9 @@ export const loginUser = async (req, res) => {
       expiresIn: "1h",
     });
     const verificationLink = `http://localhost:5173/verifyEmail?token=${verifyEmailToken}`;
+    const message = "Click the link below to verify your account";
     if (user.verified !== true) {
-      await sendVerificationEmail(email, verificationLink);
+      await sendVerificationEmail(email, verificationLink, message);
       return res.status(400).json({
         sucess: false,
         message: `You are not yet verifed verified. A new verification link has be sent to ${email}. `,
@@ -359,7 +360,7 @@ export const loginUser = async (req, res) => {
   }
 };
 
-const sendVerificationEmail = async (email, verificationLink) => {
+const sendVerificationEmail = async (email, verificationLink, message) => {
   const mailOptions = {
     from: {
       name: "THIA'S APAREAL",
@@ -368,24 +369,32 @@ const sendVerificationEmail = async (email, verificationLink) => {
     to: email,
     subject: "Email Verification",
     html: `
-      <div style="width: 100%; height:600px; max-width: 600px; margin: auto; text-align: center;
-      font-family: Arial, sans-serif; border-radius: 10px; overflow: hidden;">
-        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="height: 300px;">
-          <tr>
-            <td style="background: url('https://res.cloudinary.com/dtjgj2odu/image/upload/v1734469383/ThiaLogo_nop3yd.png') 
-            no-repeat center center; background-size: cover;"></td>
-          </tr>
-        </table>
-        <div style="padding: 20px; color:  #0B0F29;">
-          <p style="font-size: 16px;">Click the button below to verify your email. This link is valid for 1 hour.</p>
-          <a href="${verificationLink}" style="display: inline-block; padding: 12px 24px; background: #0B0F29; 
-          border: 5px solid #0B0F29; color: #F20000; text-decoration: none; font-weight: bold; border-radius: 5px;"
-          onmouseover="this.style.background='#FFF'; this.style.color='#0B0F29';"
-          onmouseout="this.style.background='#0B0F29'; this.style.color='#F20000';">Verify Email</a>
-          <p style="margin-top: 20px; font-size: 14px; color:  #0B0F29;">If you did not request this, please ignore this email.</p>
-        </div>
-      </div>
-    `,
+  <div style="width: 100%; padding:10px 0; max-width: 600px; margin: auto; text-align: center;
+  font-family: Arial, sans-serif; border-radius: 10px; overflow: hidden;">
+    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="height: 300px;">
+      <tr>
+      <td style="text-align: center; padding: 20px;">
+          <img src="https://res.cloudinary.com/dtjgj2odu/image/upload/v1734469383/ThiaLogo_nop3yd.png" 
+          alt="Thia's Apparel Logo" width="120" height="120" 
+          style="max-width: 100%; display: block; margin: auto; border-radius: 50%;">
+        </td>
+      </tr>
+    </table>
+    <div style="padding: 20px; color:  #0B0F29;">
+     
+      <p  style="display: inline-block; padding: 12px 24px; background: #F1ECEC; 
+      border: 5px solid #0B0F29; color: #656363; text-decoration: none; font-weight: bold; border-radius: 5px;">
+      ${message}</p>
+
+      <a href="${verificationLink}" style="display: inline-block; padding: 12px 24px; background: #0B0F29; 
+      border: 5px solid #0B0F29; color: #F20000; text-decoration: none; font-weight: bold; border-radius: 5px;"
+      onmouseover="this.style.background='#FFF'; this.style.color='#0B0F29';"
+      onmouseout="this.style.background='#0B0F29'; this.style.color='#F20000';">Start Payment</a>
+      
+      <p style="font-size: 16px;">If you did not request this, please ignore this email.</p>
+    </div>
+  </div>
+`,
   };
 
   try {
