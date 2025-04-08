@@ -210,43 +210,6 @@ const uploadImageToCloudinary = async (fileBuffer) => {
   }
 };
 
-const sendVerificationEmail = async (email, verificationLink) => {
-  const mailOptions = {
-    from: {
-      name: "THIA'S APAREAL",
-      address: process.env.EMAIL_HOST_USER,
-    },
-    to: email,
-    subject: "Email Verification",
-    html: `
-      <div style="width: 100%; height:600px; max-width: 600px; margin: auto; text-align: center;
-      font-family: Arial, sans-serif; border-radius: 10px; overflow: hidden;">
-        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="height: 300px;">
-          <tr>
-            <td style="background: url('https://res.cloudinary.com/dtjgj2odu/image/upload/v1734469383/ThiaLogo_nop3yd.png') 
-            no-repeat center center; background-size: cover;"></td>
-          </tr>
-        </table>
-        <div style="padding: 20px; color:  #0B0F29;">
-          <p style="font-size: 16px;">Click the button below to verify your email. This link is valid for 1 hour.</p>
-          <a href="${verificationLink}" style="display: inline-block; padding: 12px 24px; background: #0B0F29; 
-          border: 5px solid #0B0F29; color: #F20000; text-decoration: none; font-weight: bold; border-radius: 5px;"
-          onmouseover="this.style.background='#FFF'; this.style.color='#0B0F29';"
-          onmouseout="this.style.background='#0B0F29'; this.style.color='#F20000';">Verify Email</a>
-          <p style="margin-top: 20px; font-size: 14px; color:  #0B0F29;">If you did not request this, please ignore this email.</p>
-        </div>
-      </div>
-    `,
-  };
-
-  try {
-    await transporter.sendMail(mailOptions);
-    console.log(`Verification email sent to ${email}`);
-  } catch (error) {
-    console.error(`Error sending email to ${email}:`, error);
-  }
-};
-
 export const verifyEmail = async (req, res) => {
   const { token } = req.body;
   console.log("req.body:", req.body);
@@ -275,7 +238,7 @@ export const verifyEmail = async (req, res) => {
     const user = await client.query("SELECT * FROM userr WHERE email = $1", [
       email,
     ]);
-    if (!user) {
+    if (!user.rowCount === 0) {
       return res
         .status(400)
         .json({ success: false, message: "Unable to find user" });
@@ -287,6 +250,9 @@ export const verifyEmail = async (req, res) => {
     //   data: { status: true },
     // });
 
+    await client.query("UPDATE userr SET verified = TRUE WHERE email = $1", [
+      email,
+    ]);
     // If verification is successful, send a success response
     return res.status(200).json({
       success: true,
@@ -317,6 +283,14 @@ export const loginUser = async (req, res) => {
 
     // Extract the user from rows
     const user = result.rows[0];
+    const verificationLink = `http://localhost:5173/verifyEmail?token=${verifyEmailToken}`;
+    if (user.verified !== true) {
+      await sendVerificationEmail(email, verificationLink);
+      return res.status(400).json({
+        sucess: false,
+        message: `${email} has not been verified. A new verification link has be sent. `,
+      });
+    }
     console.log(result.rows[0]);
 
     //validate password
@@ -378,6 +352,43 @@ export const loginUser = async (req, res) => {
       success: false,
       message: "An error occurred while logging in. Please try again later.",
     });
+  }
+};
+
+const sendVerificationEmail = async (email, verificationLink) => {
+  const mailOptions = {
+    from: {
+      name: "THIA'S APAREAL",
+      address: process.env.EMAIL_HOST_USER,
+    },
+    to: email,
+    subject: "Email Verification",
+    html: `
+      <div style="width: 100%; height:600px; max-width: 600px; margin: auto; text-align: center;
+      font-family: Arial, sans-serif; border-radius: 10px; overflow: hidden;">
+        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="height: 300px;">
+          <tr>
+            <td style="background: url('https://res.cloudinary.com/dtjgj2odu/image/upload/v1734469383/ThiaLogo_nop3yd.png') 
+            no-repeat center center; background-size: cover;"></td>
+          </tr>
+        </table>
+        <div style="padding: 20px; color:  #0B0F29;">
+          <p style="font-size: 16px;">Click the button below to verify your email. This link is valid for 1 hour.</p>
+          <a href="${verificationLink}" style="display: inline-block; padding: 12px 24px; background: #0B0F29; 
+          border: 5px solid #0B0F29; color: #F20000; text-decoration: none; font-weight: bold; border-radius: 5px;"
+          onmouseover="this.style.background='#FFF'; this.style.color='#0B0F29';"
+          onmouseout="this.style.background='#0B0F29'; this.style.color='#F20000';">Verify Email</a>
+          <p style="margin-top: 20px; font-size: 14px; color:  #0B0F29;">If you did not request this, please ignore this email.</p>
+        </div>
+      </div>
+    `,
+  };
+
+  try {
+    await transporter.sendMail(mailOptions);
+    console.log(`Verification email sent to ${email}`);
+  } catch (error) {
+    console.error(`Error sending email to ${email}:`, error);
   }
 };
 
