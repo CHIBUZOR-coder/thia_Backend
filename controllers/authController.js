@@ -533,3 +533,163 @@ export const resetPassword = async (req, res) => {
     });
   }
 };
+
+const getPublicIdFromUrl = (url) => {
+  const parts = url.split("/");
+  const filename = parts[parts.length - 1]; // Extract the last part: "image_id.jpg"
+  const publicId = filename.split(".")[0]; // Remove the extension
+  return `Users/${publicId}`; // Add the folder path back
+};
+
+//Update Profile
+export const updateProfile = async (req, res) => {
+  const { firstname, lastname, Id, newEmail, password } = req.body;
+  console.log("body:", req.body);
+
+  if (!firstname) {
+    return res.status(400).json({
+      success: false,
+      message: "First Name feild is required!",
+    });
+  }
+
+  if (!lastname) {
+    return res.status(400).json({
+      success: false,
+      message: "First Name feild is required!",
+    });
+  }
+
+  if (!Id) {
+    console.log("id feild is missing!");
+
+    return res.status(400).json({
+      success: false,
+      message: "Somthing went Wrong, pls try again!",
+    });
+  }
+
+  const parsedId = parseInt(Id);
+
+  try {
+    const user = await client.query("SELECT * FROM userr WHERE id = $1", [
+      parsedId,
+    ]);
+
+    if (!user.rows[0]) {
+      return res
+        .status(400)
+        .json({ success: false, message: "User does not exist" });
+    }
+
+    const validatePassword = await bcrypt.compare(password, user.password);
+    if (!validatePassword) {
+      return res.status(400).json({
+        success: false,
+        message: "User password did not match!",
+      });
+    }
+
+    let updateData = { firstname, lastname }; // Always initialize updateData
+
+    if (req.file) {
+      const publicId = getPublicIdFromUrl(user[0].image);
+      if (!publicId) {
+        return res.status(400).json({
+          success: false,
+          message: "Unable to retrieve image URL from database",
+        });
+      }
+
+      console.log(publicId);
+      const imageUrl = await updateToCloudinary(
+        req.file.buffer,
+        "image",
+        publicId
+      );
+      if (!imageUrl) {
+        return res.status(400).json({
+          success: false,
+          message: "Unable to upload image to Cloudinary",
+        });
+      }
+
+      updateData.image = imageUrl; // Assign image URL to updateData
+    }
+
+    if (newEmail) {
+      updateData.email = newEmail; // Correctly assign new email
+    }
+
+    let updatedEmail;
+    if (Object.keys(updateData).length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "No update data provided.",
+      });
+    }
+
+    const updatedFirstName = await client.query(
+      "UPDATE userr SET firstname = $1 ",
+      [updateData.firstname]
+    );
+    const updatedLastName = await client.query(
+      "UPDATE userr SET lasttname = $1 ",
+      [updateData.lastname]
+    );
+
+    if (newEmail) {
+      updatedEmail = await client.query("UPDATE userr SET email = $1 ", [
+        updateData.email,
+      ]);
+    }
+
+    console.log("updateData:", updateData);
+
+    return res.status(200).json({
+      success: true,
+      message: "Profile Updated Successfully",
+      data: updatedEmail,
+    });
+  } catch (error) {
+    console.log(error.message);
+    return res.status(400).json({
+      success: false,
+      message: "An error occurred while updating the profile",
+    });
+  }
+};
+
+const updateToCloudinary = async (
+  fileBuffer,
+  resourceType,
+  publicId = null
+) => {
+  try {
+    const uploadOptions = {
+      resource_type: resourceType,
+      folder: "Users",
+    };
+
+    if (publicId) {
+      uploadOptions.public_id = publicId; // Replace the existing image
+      uploadOptions.overwrite = true; // Allow overwriting the image
+    }
+
+    const uploadPromise = new Promise((resolve, reject) => {
+      cloudinary.uploader
+        .upload_stream(uploadOptions, (error, result) => {
+          if (error) return reject(error);
+          resolve(result.secure_url);
+        })
+        .end(fileBuffer);
+    });
+
+    const result = await uploadPromise;
+    console.log("Upload successful:", result);
+    return result;
+  } catch (error) {
+    console.error("Upload failed:", error);
+    throw new Error("Upload failed");
+  }
+};

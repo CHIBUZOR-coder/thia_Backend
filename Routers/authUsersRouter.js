@@ -5,6 +5,7 @@ import {
   verifyEmail,
   AccountRecovery,
   resetPassword,
+  updateProfile,
 } from "../controllers/authController.js";
 import { verifyToken } from "../middlewares/authentication.js"; // Import the verifyToken middleware
 import express from "express";
@@ -41,6 +42,7 @@ authRouter.post("/clear-cookies", (req, res) => {
   res.status(200).json({ success: true, message: "Cookies cleared" });
 });
 
+authRouter.put("/updateProfile", uploads.single("image"), updateProfile);
 // authRouter.get("/api/protectedRoute", validatoken, (req, res) => {
 //   res.status(200).json({
 //     success: true,
