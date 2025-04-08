@@ -85,6 +85,7 @@ function generateToken(user) {
       address,
       phone,
       image,
+      billAdress,
     };
 
     // Token options
