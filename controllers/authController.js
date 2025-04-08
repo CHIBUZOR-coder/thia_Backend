@@ -543,7 +543,8 @@ const getPublicIdFromUrl = (url) => {
 
 //Update Profile
 export const updateProfile = async (req, res) => {
-  const { firstname, lastname, Id, newEmail, password } = req.body;
+  const { firstname, lastname, Id, newEmail, password, address, address2 } =
+    req.body;
   console.log("body:", req.body);
 
   if (!firstname) {
@@ -624,9 +625,23 @@ export const updateProfile = async (req, res) => {
       updateData.email = newEmail; // Correctly assign new email
     }
 
+
+    //Adress
+    if (address) {
+      updateData.addres = address;
+    }
+
+    //Billing Adress
+    if (address2) {
+      updateData.addres2 = address2;
+    }
+
     let updatedEmail;
     let updatedLastName;
     let updatedFirstName;
+    let updatedaddress;
+    let updatedaddress2;
+
     if (Object.keys(updateData).length === 0) {
       return res.status(400).json({
         success: false,
@@ -638,6 +653,20 @@ export const updateProfile = async (req, res) => {
       updatedFirstName = await client.query(
         "UPDATE userr SET firstname = $1 WHERE userr.id = $2 ",
         [updateData.firstname, parsedId]
+      );
+    }
+
+    if (address) {
+      updatedaddress = await client.query(
+        "UPDATE userr SET  address = $1 WHERE userr.id = $2 ",
+        [updateData.addres, parsedId]
+      );
+    }
+
+    if (address2) {
+      updatedaddress2 = await client.query(
+        "UPDATE userr SET  address2 = $1 WHERE userr.id = $2 ",
+        [updateData.addres2, parsedId]
       );
     }
 
