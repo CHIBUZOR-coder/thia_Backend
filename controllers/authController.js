@@ -582,7 +582,10 @@ export const updateProfile = async (req, res) => {
         .json({ success: false, message: "User does not exist" });
     }
 
-    const validatePassword = await bcrypt.compare(password, user.rows[0].password);
+    const validatePassword = await bcrypt.compare(
+      password,
+      user.rows[0].password
+    );
     if (!validatePassword) {
       return res.status(400).json({
         success: false,
@@ -622,6 +625,8 @@ export const updateProfile = async (req, res) => {
     }
 
     let updatedEmail;
+    let updatedLastName;
+    let updatedFirstName;
     if (Object.keys(updateData).length === 0) {
       return res.status(400).json({
         success: false,
@@ -629,16 +634,29 @@ export const updateProfile = async (req, res) => {
       });
     }
 
-    const updatedFirstName = await client.query(
-      "UPDATE userr SET firstname = $1 ",
-      [updateData.firstname]
-    );
-    const updatedLastName = await client.query(
-      "UPDATE userr SET lastname = $1 ",
-      [updateData.lastname]
-    );
+    if (firstname) {
+      updatedFirstName = await client.query(
+        "UPDATE userr SET firstname = $1 ",
+        [updateData.firstname]
+      );
+    }
+
+    if (lastname) {
+      updatedLastName = await client.query("UPDATE userr SET lastname = $1 ", [
+        updateData.lastname,
+      ]);
+    }
 
     if (newEmail) {
+      const existingEmail = await client.query(
+        "SELECT * FROM userr WHERE email = $1",
+        [newEmail]
+      );
+      if (existingEmail.rows[0]) {
+        return res
+          .status(400)
+          .json({ success: false, message: "Email already exist!" });
+      }
       updatedEmail = await client.query("UPDATE userr SET email = $1 ", [
         updateData.email,
       ]);
@@ -652,7 +670,7 @@ export const updateProfile = async (req, res) => {
       data: updatedEmail,
     });
   } catch (error) {
-    console.log("error:",error.message);
+    console.log("error:", error.message);
     return res.status(400).json({
       success: false,
       message: error.message || "An error occurred while updating the profile",
