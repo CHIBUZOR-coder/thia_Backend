@@ -688,7 +688,7 @@ const updateToCloudinary = async (
   try {
     const uploadOptions = {
       resource_type: resourceType,
-      folder: "Users",
+      folder: "thia_user_image",
     };
 
     if (publicId) {
