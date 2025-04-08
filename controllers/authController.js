@@ -281,7 +281,7 @@ export const loginUser = async (req, res) => {
         .status(400)
         .json({ success: false, message: "Invalid Credentials" });
 
-    // Extract the user from rows
+    // Extract the user from rows.....
     const user = result.rows[0];
 
     const verifyEmailToken = jwt.sign({ email }, process.env.EMAIL_SECRET, {
