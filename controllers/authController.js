@@ -283,6 +283,10 @@ export const loginUser = async (req, res) => {
 
     // Extract the user from rows
     const user = result.rows[0];
+
+    const verifyEmailToken = jwt.sign({ email }, process.env.EMAIL_SECRET, {
+      expiresIn: "1h",
+    });
     const verificationLink = `http://localhost:5173/verifyEmail?token=${verifyEmailToken}`;
     if (user.verified !== true) {
       await sendVerificationEmail(email, verificationLink);
