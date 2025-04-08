@@ -634,7 +634,7 @@ export const updateProfile = async (req, res) => {
       [updateData.firstname]
     );
     const updatedLastName = await client.query(
-      "UPDATE userr SET lasttname = $1 ",
+      "UPDATE userr SET lastname = $1 ",
       [updateData.lastname]
     );
 
