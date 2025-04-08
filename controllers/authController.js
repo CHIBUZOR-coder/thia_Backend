@@ -292,7 +292,7 @@ export const loginUser = async (req, res) => {
       await sendVerificationEmail(email, verificationLink);
       return res.status(400).json({
         sucess: false,
-        message: `${email} has not been verified. A new verification link has be sent. `,
+        message: `You are not yet verifed verified. A new verification link has be sent to ${email}. `,
       });
     }
     console.log(result.rows[0]);
