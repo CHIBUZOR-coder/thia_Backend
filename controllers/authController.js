@@ -312,6 +312,7 @@ export const loginUser = async (req, res) => {
       address: user.address || "No Address Provided",
       phone: user.phone || "No Phone Provided",
       image: user.image,
+      billAdress: user.address2,
     });
 
     if (!token)

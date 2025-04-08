@@ -24,7 +24,7 @@ if (!SECRET_KEY) {
 //     const payload = {
 //       id: userId,
 //       role: userRole,
-      
+
 //     };
 
 //     //checking for userId and userRole
@@ -46,11 +46,33 @@ if (!SECRET_KEY) {
 
 function generateToken(user) {
   try {
-    const { id, role, email, firstname, lastname , address, phone, image} = user;
+    const {
+      id,
+      role,
+      email,
+      firstname,
+      lastname,
+      address,
+      phone,
+      image,
+      billAdress,
+    } = user;
 
     // Validate required fields
-    if (!id || !role || !email || !firstname || !lastname || !address || !phone) {
-      throw new Error("All user fields (id, role, email, firstname, lastname) are required to generate a token");
+    if (
+      !id ||
+      !role ||
+      !email ||
+      !firstname ||
+      !lastname ||
+      !address ||
+      !phone ||
+      !image ||
+      !billAdress
+    ) {
+      throw new Error(
+        "All user fields (id, role, email, firstname, lastname) are required to generate a token"
+      );
     }
 
     // Payload data
@@ -62,7 +84,7 @@ function generateToken(user) {
       lastname,
       address,
       phone,
-      image
+      image,
     };
 
     // Token options
@@ -78,11 +100,9 @@ function generateToken(user) {
   }
 }
 
-
-
 function ResetPasswordToken(user) {
   try {
-    const { email} = user;
+    const { email } = user;
     console.log("user", user);
 
     if (!email) {
@@ -92,7 +112,6 @@ function ResetPasswordToken(user) {
     // Payload data
     const payload = {
       email,
- 
     };
 
     // Token options
