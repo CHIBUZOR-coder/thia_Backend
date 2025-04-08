@@ -636,15 +636,16 @@ export const updateProfile = async (req, res) => {
 
     if (firstname) {
       updatedFirstName = await client.query(
-        "UPDATE userr SET firstname = $1 ",
-        [updateData.firstname]
+        "UPDATE userr SET firstname = $1 WHERE userr.id = $2 ",
+        [updateData.firstname, parsedId]
       );
     }
 
     if (lastname) {
-      updatedLastName = await client.query("UPDATE userr SET lastname = $1 ", [
-        updateData.lastname,
-      ]);
+      updatedLastName = await client.query(
+        "UPDATE userr SET lastname = $1 WHERE userr.id = $2 ",
+        [updateData.lastname, parsedId]
+      );
     }
 
     if (newEmail) {
@@ -657,9 +658,10 @@ export const updateProfile = async (req, res) => {
           .status(400)
           .json({ success: false, message: "Email already exist!" });
       }
-      updatedEmail = await client.query("UPDATE userr SET email = $1 ", [
-        updateData.email,
-      ]);
+      updatedEmail = await client.query(
+        "UPDATE userr SET email = $1 WHERE userr.id = $2 ",
+        [updateData.email, parsedId]
+      );
     }
 
     console.log("updateData:", updateData);
@@ -667,7 +669,7 @@ export const updateProfile = async (req, res) => {
     return res.status(200).json({
       success: true,
       message: "Profile Updated Successfully",
-      data: updatedEmail,
+      data: updatedEmail.rows[0],
     });
   } catch (error) {
     console.log("error:", error.message);
