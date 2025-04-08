@@ -655,7 +655,7 @@ export const updateProfile = async (req, res) => {
     console.log(error.message);
     return res.status(400).json({
       success: false,
-      message: "An error occurred while updating the profile",
+      message: error.message || "An error occurred while updating the profile",
     });
   }
 };
