@@ -652,7 +652,7 @@ export const updateProfile = async (req, res) => {
       data: updatedEmail,
     });
   } catch (error) {
-    console.log(error.message);
+    console.log("error:",error.message);
     return res.status(400).json({
       success: false,
       message: error.message || "An error occurred while updating the profile",
