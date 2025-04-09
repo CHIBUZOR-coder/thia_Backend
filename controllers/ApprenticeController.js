@@ -192,8 +192,8 @@ export const getSingleApprentice = async (req, res) => {
     const parsedId = parseInt(user.id);
 
     const apprentice = await client.query(
-      "SELECT * FROM apprentice WHERE id = $1",
-      [parsedId]
+      "SELECT * FROM apprentice WHERE email = $1",
+      [user.email]
     );
 
     console.log("appren:",apprentice);
