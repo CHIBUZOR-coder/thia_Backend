@@ -176,6 +176,36 @@ export const getApprentice = async (req, res) => {
   }
 };
 
+export const getSingleApprentice = async (req, res) => {
+  try {
+    const user = req.user;
+    const parsedId = parseInt(user.id);
+
+    const apprentice = await client.query(
+      "SELECT * FROM apprentice WHERE id = $1",
+      [parsedId]
+    );
+
+    if (apprentice.rowCount === 0) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Apprentice does not exist!" });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Apprentice data retrieved successfully",
+      data: apprentice.rows[0],
+    });
+  } catch (error) {
+    console.log(error.message);
+    return res.status(500).json({
+      success: false,
+      message: "Something went wrong, please try again later!",
+    });
+  }
+};
+
 export const deleteApprentice = async (req, res) => {
   try {
     const { id } = req.body;
