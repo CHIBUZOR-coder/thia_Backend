@@ -196,6 +196,9 @@ export const getSingleApprentice = async (req, res) => {
       [parsedId]
     );
 
+    console.log(apprentice);
+    
+
     if (apprentice.rowCount === 0) {
       return res
         .status(400)
