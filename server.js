@@ -23,7 +23,7 @@ app.use(
     // origin: "https://thia-e-comerce.vercel.app", // Ensure your frontend URL is allowed
     origin: [
       "https://thia-e-comerce.vercel.app",
-      "http://localhost:5173/", // local dev, optional
+      "http://localhost:5173", // local dev, optional
     ],
     methods: ["GET", "POST", "DELETE", "PUT"], // Allow specific HTTP methods
     credentials: true, // Allow cookies and other credentials
