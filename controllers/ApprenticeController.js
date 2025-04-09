@@ -179,6 +179,8 @@ export const getApprentice = async (req, res) => {
 export const getSingleApprentice = async (req, res) => {
   try {
     const user = req.user;
+    console.log("user:", req.user);
+
     const parsedId = parseInt(user.id);
 
     const apprentice = await client.query(
