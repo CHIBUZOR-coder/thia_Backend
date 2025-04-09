@@ -1,6 +1,6 @@
 import { verifyAdminToken } from "../middlewares/verifyAdmin.js";
 import express from "express";
-
+import { verifyToken } from "../middlewares/authentication.js";
 const apprenticeRouter = express.Router();
 
 import {
@@ -25,7 +25,7 @@ apprenticeRouter.delete(
 );
 
 apprenticeRouter.post("/apprenticePaynent", initialisePayment);
-apprenticeRouter.get("/getSingleApprentice", getSingleApprentice);
+apprenticeRouter.get("/getSingleApprentice", verifyToken, getSingleApprentice);
 apprenticeRouter.post("/verifyApprenticePyment", verifyApprenticePyment);
 
 export { apprenticeRouter };
