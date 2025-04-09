@@ -408,9 +408,16 @@ export const verifyApprenticePyment = async (req, res) => {
     const data = await response.json();
 
     let bill;
+    let startDate;
+    let endDate;
+    let course;
     if (data.data && data.data.meta) {
       try {
         bill = data?.data?.charged_amount;
+        startDate = data?.data?.startDate;
+        endDate = data?.data?.endDate;
+        course = data?.data?.course;
+
         // console.log("Parsed Products:", products);
       } catch (error) {
         console.error("Error parsing products JSON:", error);
@@ -452,9 +459,18 @@ export const verifyApprenticePyment = async (req, res) => {
     }
 
     reciept = await client.query(
-      `INSERT INTO apprentice_reciept (apprenticeId, orderId, transaction_id, bill, status)
-       VALUES ($1, $2, $3, $4, $5) RETURNING *`,
-      [apprentice.id, orderId, transaction_id, bill, "Completed"]
+      `INSERT INTO apprentice_reciept (apprenticeId, orderId, transaction_id, bill, status, startDate, endDate, course )
+       VALUES ($1, $2, $3, $4, $5,$6, $7, $8) RETURNING *`,
+      [
+        apprentice.id,
+        orderId,
+        transaction_id,
+        bill,
+        "Completed",
+        startDate,
+        endDate,
+        course,
+      ]
     );
 
     //gggg
