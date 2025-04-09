@@ -68,6 +68,16 @@ export const registerApprentice = async (req, res) => {
         .json({ success: false, message: "Apprentice already exists" });
 
     // Validate email format
+    const isUser = await client.query("SELECT * FROM userr WHERE email = $1", [
+      email,
+    ]);
+
+    if (isUser.rowCount > 0) {
+      await client.query(
+        "UPDATE userr SET role = 'Apprentice' WHERE email = $1",
+        [email]
+      );
+    }
 
     //create new applicant
     const newUserApprentice = await client.query(
