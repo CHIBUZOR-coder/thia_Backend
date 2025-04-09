@@ -387,7 +387,7 @@ const sendVerificationEmail = async (email, verificationLink, message) => {
       <p  style="display: inline-block; padding: 12px 24px; background: #F1ECEC; 
       border: 5px solid #0B0F29; color: #656363; text-decoration: none; font-weight: bold; border-radius: 5px;">
       ${message}</p>
-<p><</p>
+
       <a href="${verificationLink}" style="display: inline-block; padding: 12px 24px; background: #0B0F29; 
       border: 5px solid #0B0F29; color: #F20000; text-decoration: none; font-weight: bold; border-radius: 5px;"
       onmouseover="this.style.background='#FFF'; this.style.color='#0B0F29';"
