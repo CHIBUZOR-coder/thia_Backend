@@ -23,7 +23,7 @@ const port = process.env.PORT || 5000;
 //Middlewares
 app.use(
   cors({
-    origin: "http://localhost:5173", // Ensure your frontend URL is allowed
+    origin: "https://thia-e-comerce.vercel.app", // Ensure your frontend URL is allowed
     methods: ["GET", "POST", "DELETE", "PUT"], // Allow specific HTTP methods
     credentials: true, // Allow cookies and other credentials
   })
