@@ -192,11 +192,15 @@ export const getSingleApprentice = async (req, res) => {
     const parsedId = parseInt(user.id);
 
     const apprentice = await client.query(
-      "SELECT * FROM apprentice WHERE email = $1",
+      `SELECT apprentice.firstName, apprentice.image, apprentice.phone, apprentice_reciept.status 
+   FROM apprentice 
+   JOIN apprentice_reciept 
+   ON apprentice.id = apprentice_reciept.apprenticeId 
+   WHERE apprentice.email = $1`,
       [user.email]
     );
 
-    console.log("appren:",apprentice);
+    console.log("appren:", apprentice);
 
     if (apprentice.rowCount === 0) {
       return res
