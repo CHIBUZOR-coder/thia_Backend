@@ -192,7 +192,7 @@ export const getSingleApprentice = async (req, res) => {
     const parsedId = parseInt(user.id);
 
     const apprentice = await client.query(
-      `SELECT apprentice.firstName, apprentice.image, apprentice.phone, apprentice_reciept.status 
+      `SELECT apprentice.firstName, apprentice.image, apprentice.phone, apprentice_reciept.status, apprentice_reciept.bill 
    FROM apprentice 
    JOIN apprentice_reciept 
    ON apprentice.id = apprentice_reciept.apprenticeId 
