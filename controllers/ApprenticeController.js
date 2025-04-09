@@ -178,14 +178,14 @@ export const getApprentice = async (req, res) => {
 
 export const getSingleApprentice = async (req, res) => {
   try {
-   const user = req.user;
+    const user = req.user;
 
-   // Validate user
-   if (!user) {
-     return res
-       .status(400)
-       .json({ success: false, message: "User not found. Please log in." });
-   }
+    // Validate user
+    if (!user) {
+      return res
+        .status(400)
+        .json({ success: false, message: "User not found. Please log in." });
+    }
 
     console.log("user:", req.user);
 
@@ -196,8 +196,7 @@ export const getSingleApprentice = async (req, res) => {
       [parsedId]
     );
 
-    console.log(apprentice);
-    
+    console.log("appren:",apprentice);
 
     if (apprentice.rowCount === 0) {
       return res
