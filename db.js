@@ -22,26 +22,4 @@ const client = new Client({
   }
 })();
 
-export default client;
-// import pg from "pg";
-// import dotenv from "dotenv";
-// dotenv.config();
-
-// const { Client } = pg;
-
-// const client = new Client({
-//   connectionString: process.env.DATABASE_URL,
-//   ssl: false, // Disable SSL
-// });
-
-// (async () => {
-//   try {
-//     await client.connect();
-//     console.log("Database connected successfully via Session Pooler");
-//   } catch (error) {
-//     console.error("Database connection error:", error.message);
-//   }
-// })();
-
-// export default client;
-
+export default client; 
