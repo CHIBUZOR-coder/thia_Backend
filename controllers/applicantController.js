@@ -139,7 +139,7 @@ const sendVerificationEmail = async (email, message) => {
         <div style="padding: 20px; color:  #0B0F29;">
          
           <p  style="display: inline-block; padding: 12px 24px; background: #F1ECEC; 
-          border: 5px solid #0B0F29; color: #656363; text-decoration: none; font-weight: bold; border-radius: 5px;">${message}</p>
+          border: 5px solid #0B0F29; color: #656363; text-decoration: none; font-weight: bold; border-radius: 5px;">${messagee}</p>
           <p style="margin-top: 20px; font-size: 14px; color:  #0B0F29;">If you did not request this, please ignore this email.</p>
         </div>
       </div>

@@ -269,9 +269,10 @@ export const verifyEmail = async (req, res) => {
 
 //login users
 export const loginUser = async (req, res) => {
+  const { email, password } = req.body;
   try {
     //Get user data or req body
-    const { email, password } = req.body;
+ 
     //check if user exist
     const result = await client.query("SELECT * FROM userr WHERE email = $1", [
       email,
@@ -331,7 +332,6 @@ export const loginUser = async (req, res) => {
     if (!token)
       return res.status(400).json({ success: false, message: "Invalid Token" });
 
-    const isProduction = process.env.NODE_ENV === "production";
 
     res.cookie("auth_token", token, {
       httpOnly: true, // Ensures the cookie cannot be accessed via JavaScript
@@ -340,8 +340,7 @@ export const loginUser = async (req, res) => {
       sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax", // SameSite=None for cross-origin requests in production
     });
 
-    res.status(200);
-    res.json({
+    res.status(200).res.json({
       success: true,
       message: "You are now logged in",
       role: user.role,
